@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, StatusBar } from 'react-native';
+import { View, ActivityIndicator, StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import { C } from './src/lib/theme';
+import { useColors } from './src/lib/theme';
 import { loadState, saveState, bumpStreak } from './src/lib/storage';
 import Home from './src/screens/Home';
 import Lesson from './src/screens/Lesson';
 import Exam from './src/screens/Exam';
 
 export default function App() {
+  const C = useColors();
+  const scheme = useColorScheme();
   const [state, setState] = useState(null);
   const [activeModule, setActiveModule] = useState(null);
   const [examOpen, setExamOpen] = useState(false);
 
-  // Load saved progress once, bump the daily streak, persist.
   useEffect(() => {
     (async () => {
       const s = bumpStreak(await loadState());
@@ -21,7 +22,6 @@ export default function App() {
     })();
   }, []);
 
-  // Persist and re-render whenever state changes inside a lesson.
   const commit = useCallback(async (next) => {
     const copy = { ...next, progress: { ...next.progress }, history: [...next.history] };
     setState(copy);
@@ -30,15 +30,18 @@ export default function App() {
 
   if (!state) {
     return (
-      <View style={styles.loading}>
+      <View style={{ flex: 1, backgroundColor: C.bg, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={C.accent} size="large" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+      <StatusBar
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={C.bg}
+      />
       {examOpen ? (
         <Exam state={state} onCommit={commit} onExit={() => setExamOpen(false)} />
       ) : activeModule ? (
@@ -58,8 +61,3 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.bg },
-  loading: { flex: 1, backgroundColor: C.bg, alignItems: 'center', justifyContent: 'center' },
-});

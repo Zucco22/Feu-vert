@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { C } from '../lib/theme';
+import { useColors } from '../lib/theme';
 import { MODULES } from '../data/content';
 import Sign from '../components/Sign';
+import MascoLight from '../components/MascoLight';
 
-const EXAM_SIZE = 40; // format officiel : 40 questions
-const PASS = 35; // réussite à 35/40
+const EXAM_SIZE = 40;
+const PASS = 35;
 const XP_PER_CORRECT = 5;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -18,7 +19,6 @@ function shuffle(arr) {
   return a;
 }
 
-// Tire EXAM_SIZE questions au hasard parmi TOUS les thèmes.
 function buildExam() {
   const all = [];
   for (const m of MODULES) for (const q of m.questions) all.push(q);
@@ -39,16 +39,18 @@ function fmtTime(sec) {
 }
 
 export default function Exam({ state, onCommit, onExit }) {
+  const C = useColors();
+  const styles = useMemo(() => makeStyles(C), [C]);
+
   const deck = useMemo(buildExam, []);
   const total = deck.length;
   const [qi, setQi] = useState(0);
   const [selected, setSelected] = useState(null);
-  const [answers, setAnswers] = useState([]); // { correct: bool }
-  const [phase, setPhase] = useState('exam'); // 'exam' | 'result'
+  const [answers, setAnswers] = useState([]);
+  const [phase, setPhase] = useState('exam');
   const [elapsed, setElapsed] = useState(0);
   const [savedResult, setSavedResult] = useState(null);
 
-  // chrono
   useEffect(() => {
     if (phase !== 'exam') return;
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
@@ -95,17 +97,20 @@ export default function Exam({ state, onCommit, onExit }) {
     const r = savedResult;
     return (
       <View style={styles.overlay}>
-        <View style={styles.head}>
+        <View style={[styles.head, { borderBottomColor: C.border }]}>
           <Pressable onPress={onExit} style={styles.closeBtn}>
             <Text style={{ fontSize: 22, color: C.textMuted }}>✕</Text>
           </Pressable>
           <Text style={styles.headTitle}>Résultat de l'examen</Text>
         </View>
         <ScrollView contentContainerStyle={styles.body}>
+          <View style={{ alignItems: 'center', marginBottom: 12 }}>
+            <MascoLight mood={r.passed ? 'happy' : 'sad'} size={90} />
+          </View>
           <View
             style={[
               styles.resultBadge,
-              { backgroundColor: r.passed ? '#EAF7DE' : '#FDE7E7' },
+              { backgroundColor: r.passed ? C.correctBg : C.incorrectBg },
             ]}
           >
             <Text style={[styles.resultScore, { color: r.passed ? C.success : C.danger }]}>
@@ -130,7 +135,6 @@ export default function Exam({ state, onCommit, onExit }) {
             </View>
           </View>
 
-          {/* révision des erreurs */}
           {answers.some((a) => !a.correct) ? (
             <>
               <Text style={styles.reviewHeading}>À revoir</Text>
@@ -163,15 +167,15 @@ export default function Exam({ state, onCommit, onExit }) {
     );
   }
 
-  // ---------- EXAMEN (pas de correction en direct) ----------
+  // ---------- EXAMEN ----------
   return (
     <View style={styles.overlay}>
-      <View style={styles.head}>
+      <View style={[styles.head, { borderBottomColor: C.border }]}>
         <Pressable onPress={onExit} style={styles.closeBtn}>
           <Text style={{ fontSize: 22, color: C.textMuted }}>✕</Text>
         </Pressable>
-        <View style={styles.bar}>
-          <View style={[styles.barFill, { width: `${(qi / total) * 100}%` }]} />
+        <View style={[styles.bar, { backgroundColor: C.surface2 }]}>
+          <View style={[styles.barFill, { width: `${(qi / total) * 100}%`, backgroundColor: C.accent }]} />
         </View>
         <Text style={styles.timer}>{fmtTime(elapsed)}</Text>
       </View>
@@ -189,10 +193,18 @@ export default function Exam({ state, onCommit, onExit }) {
           {q.options.map((opt, idx) => (
             <Pressable
               key={idx}
-              style={[styles.choice, idx === selected && styles.choiceSelected]}
+              style={[
+                styles.choice,
+                idx === selected && { borderColor: C.blue, backgroundColor: C.selectedBg },
+              ]}
               onPress={() => setSelected(idx)}
             >
-              <View style={[styles.optLetter, idx === selected && styles.optLetterSel]}>
+              <View
+                style={[
+                  styles.optLetter,
+                  idx === selected && { backgroundColor: C.blue, borderColor: C.blue },
+                ]}
+              >
                 <Text style={[styles.optLetterText, idx === selected && { color: '#fff' }]}>
                   {LETTERS[idx]}
                 </Text>
@@ -203,12 +215,12 @@ export default function Exam({ state, onCommit, onExit }) {
         </View>
 
         <Pressable
-          style={[styles.primaryBtn, selected === null && styles.primaryBtnDisabled]}
+          style={[styles.primaryBtn, selected === null && { backgroundColor: C.border }]}
           onPress={validate}
           disabled={selected === null}
         >
           <Text style={styles.primaryBtnText}>
-            {qi + 1 >= total ? 'TERMINER L\'EXAMEN' : 'VALIDER'}
+            {qi + 1 >= total ? "TERMINER L'EXAMEN" : 'VALIDER'}
           </Text>
         </Pressable>
         <Text style={styles.note}>Pas de correction pendant l'examen — comme le vrai.</Text>
@@ -217,95 +229,93 @@ export default function Exam({ state, onCommit, onExit }) {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: C.bg },
-  head: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: C.border,
-  },
-  headTitle: { fontSize: 16, fontWeight: '700', color: C.text },
-  closeBtn: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  bar: { flex: 1, height: 8, borderRadius: 999, backgroundColor: C.surface2, overflow: 'hidden' },
-  barFill: { height: '100%', backgroundColor: C.accent, borderRadius: 999 },
-  timer: {
-    fontWeight: '800',
-    color: C.text,
-    fontSize: 14,
-    backgroundColor: C.surface2,
-    borderRadius: 999,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    overflow: 'hidden',
-  },
-  body: { padding: 20, paddingBottom: 40, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  counter: { fontSize: 13, color: C.textMuted, fontWeight: '700', marginBottom: 10 },
-  qHeader: { flexDirection: 'row', gap: 14, alignItems: 'flex-start', marginBottom: 18 },
-  qText: { flex: 1, fontSize: 19, fontWeight: '700', color: C.text, lineHeight: 26 },
-  choice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderBottomWidth: 4,
-    borderColor: C.border,
-    backgroundColor: C.surface,
-  },
-  choiceSelected: { borderColor: C.blue, backgroundColor: '#E7F6FE' },
-  optLetter: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: C.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: C.surface2,
-  },
-  optLetterSel: { backgroundColor: C.blue, borderColor: C.blue },
-  optLetterText: { fontWeight: '700', fontSize: 13, color: C.textMuted },
-  optText: { flex: 1, fontSize: 15, fontWeight: '700', color: C.text, lineHeight: 20 },
-  primaryBtn: {
-    backgroundColor: C.accent,
-    borderRadius: 16,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  primaryBtnDisabled: { backgroundColor: C.border },
-  primaryBtnText: { color: '#fff', fontWeight: '800', fontSize: 15, letterSpacing: 0.5 },
-  note: { fontSize: 12, color: C.textMuted, textAlign: 'center', marginTop: 12 },
-  resultBadge: { borderRadius: 20, padding: 24, alignItems: 'center', marginBottom: 6 },
-  resultScore: { fontSize: 52, fontWeight: '800' },
-  resultVerdict: { fontSize: 18, fontWeight: '800', marginTop: 4, letterSpacing: 1 },
-  resultSub: { fontSize: 13, color: C.textMuted, marginTop: 8 },
-  summaryGrid: { flexDirection: 'row', gap: 32, marginVertical: 22, justifyContent: 'center' },
-  cellN: { fontSize: 22, fontWeight: '800', color: C.text, textAlign: 'center' },
-  cellL: { fontSize: 12, color: C.textMuted, textAlign: 'center' },
-  reviewHeading: {
-    fontSize: 12,
-    letterSpacing: 1,
-    color: C.textMuted,
-    fontWeight: '700',
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  reviewCard: {
-    backgroundColor: C.surface,
-    borderWidth: 1,
-    borderColor: C.border,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-  },
-  reviewTop: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', marginBottom: 8 },
-  reviewQ: { flex: 1, fontSize: 14.5, fontWeight: '700', color: C.text, lineHeight: 20 },
-  reviewGood: { fontSize: 14, fontWeight: '700', color: C.success, marginBottom: 4 },
-  reviewExplain: { fontSize: 13.5, color: C.textMuted, lineHeight: 19 },
-  perfect: { fontSize: 16, color: C.success, fontWeight: '700', textAlign: 'center', marginVertical: 20 },
-});
+function makeStyles(C) {
+  return StyleSheet.create({
+    overlay: { flex: 1, backgroundColor: C.bg },
+    head: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      padding: 14,
+      borderBottomWidth: 1,
+    },
+    headTitle: { fontSize: 16, fontWeight: '700', color: C.text },
+    closeBtn: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+    bar: { flex: 1, height: 8, borderRadius: 999, overflow: 'hidden' },
+    barFill: { height: '100%', borderRadius: 999 },
+    timer: {
+      fontWeight: '800',
+      color: C.text,
+      fontSize: 14,
+      backgroundColor: C.surface2,
+      borderRadius: 999,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      overflow: 'hidden',
+    },
+    body: { padding: 20, paddingBottom: 40, maxWidth: 640, width: '100%', alignSelf: 'center' },
+    counter: { fontSize: 13, color: C.textMuted, fontWeight: '700', marginBottom: 10 },
+    qHeader: { flexDirection: 'row', gap: 14, alignItems: 'flex-start', marginBottom: 18 },
+    qText: { flex: 1, fontSize: 19, fontWeight: '700', color: C.text, lineHeight: 26 },
+    choice: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      padding: 14,
+      borderRadius: 16,
+      borderWidth: 2,
+      borderBottomWidth: 4,
+      borderColor: C.border,
+      backgroundColor: C.surface,
+    },
+    optLetter: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      borderWidth: 2,
+      borderColor: C.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: C.surface2,
+    },
+    optLetterText: { fontWeight: '700', fontSize: 13, color: C.textMuted },
+    optText: { flex: 1, fontSize: 15, fontWeight: '700', color: C.text, lineHeight: 20 },
+    primaryBtn: {
+      backgroundColor: C.accent,
+      borderRadius: 16,
+      paddingVertical: 15,
+      alignItems: 'center',
+      marginTop: 22,
+    },
+    primaryBtnText: { color: '#fff', fontWeight: '800', fontSize: 15, letterSpacing: 0.5 },
+    note: { fontSize: 12, color: C.textMuted, textAlign: 'center', marginTop: 12 },
+    resultBadge: { borderRadius: 20, padding: 24, alignItems: 'center', marginBottom: 6 },
+    resultScore: { fontSize: 52, fontWeight: '800' },
+    resultVerdict: { fontSize: 18, fontWeight: '800', marginTop: 4, letterSpacing: 1 },
+    resultSub: { fontSize: 13, color: C.textMuted, marginTop: 8 },
+    summaryGrid: { flexDirection: 'row', gap: 32, marginVertical: 22, justifyContent: 'center' },
+    cellN: { fontSize: 22, fontWeight: '800', color: C.text, textAlign: 'center' },
+    cellL: { fontSize: 12, color: C.textMuted, textAlign: 'center' },
+    reviewHeading: {
+      fontSize: 12,
+      letterSpacing: 1,
+      color: C.textMuted,
+      fontWeight: '700',
+      marginTop: 8,
+      marginBottom: 12,
+    },
+    reviewCard: {
+      backgroundColor: C.surface,
+      borderWidth: 1,
+      borderColor: C.border,
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 10,
+    },
+    reviewTop: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', marginBottom: 8 },
+    reviewQ: { flex: 1, fontSize: 14.5, fontWeight: '700', color: C.text, lineHeight: 20 },
+    reviewGood: { fontSize: 14, fontWeight: '700', color: C.success, marginBottom: 4 },
+    reviewExplain: { fontSize: 13.5, color: C.textMuted, lineHeight: 19 },
+    perfect: { fontSize: 16, color: C.success, fontWeight: '700', textAlign: 'center', marginVertical: 20 },
+  });
+}
