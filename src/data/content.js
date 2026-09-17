@@ -1,0 +1,309 @@
+// Auto-extracted from the Feu Vert prototype — all content preserved verbatim.
+// Signs & scenes are SVG strings, rendered with react-native-svg <SvgXml/>.
+// In each question, choices[0] is the CORRECT answer (shuffled at display time).
+
+export const SIGN = {
+    stop:'<svg viewBox="0 0 100 100"><polygon points="31,4 69,4 96,31 96,69 69,96 31,96 4,69 4,31" fill="#C4102F" stroke="#fff" stroke-width="5"/><text x="50" y="61" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="27" fill="#fff" text-anchor="middle">STOP</text></svg>',
+    yield:'<svg viewBox="0 0 100 100"><polygon points="50,94 4,12 96,12" fill="#fff" stroke="#C4102F" stroke-width="9"/></svg>',
+    priority:'<svg viewBox="0 0 100 100"><polygon points="50,4 96,50 50,96 4,50" fill="#F2C94C" stroke="#fff" stroke-width="5"/><polygon points="50,4 96,50 50,96 4,50" fill="none" stroke="#1B1F27" stroke-width="2"/></svg>',
+    danger:'<svg viewBox="0 0 100 100"><polygon points="50,6 96,90 4,90" fill="#fff" stroke="#C4102F" stroke-width="8"/><line x1="50" y1="34" x2="50" y2="62" stroke="#1B1F27" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="75" r="4.5" fill="#1B1F27"/></svg>',
+    speed:function(n){ var fs = String(n).length>2? 28:34; return '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff" stroke="#C4102F" stroke-width="10"/><text x="50" y="63" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="'+fs+'" fill="#1B1F27" text-anchor="middle">'+n+'</text></svg>'; },
+    obligation:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><path d="M50 22 L50 68 M34 54 L50 70 L66 54" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    parking:'<svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="12" fill="#1B4F8C"/><text x="50" y="70" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="50" fill="#fff" text-anchor="middle">P</text></svg>',
+    noParking:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><text x="50" y="70" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="46" fill="#fff" text-anchor="middle">P</text><circle cx="50" cy="50" r="46" fill="none" stroke="#C4102F" stroke-width="9"/><line x1="16" y1="84" x2="84" y2="16" stroke="#C4102F" stroke-width="9" stroke-linecap="round"/></svg>',
+    zone30:'<svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="12" fill="#fff" stroke="#1B1F27" stroke-width="6"/><text x="50" y="58" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="#1B1F27" text-anchor="middle">30</text><text x="50" y="80" font-family="Barlow Condensed, sans-serif" font-weight="600" font-size="13" letter-spacing="2" fill="#1B1F27" text-anchor="middle">ZONE</text></svg>',
+    pedestrian:'<svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="12" fill="#1B4F8C"/><circle cx="50" cy="28" r="8" fill="#fff"/><path d="M50 38 v20 l-16 28 M50 58 l16 28 M40 48 l-13 16 M60 48 l13 16" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    noOvertake:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#C4102F" stroke-width="9"/><rect x="14" y="46" width="30" height="16" rx="4" fill="#1B1F27"/><rect x="50" y="36" width="30" height="16" rx="4" fill="#C4102F"/></svg>',
+    panonceau:'<svg viewBox="0 0 100 120"><polygon points="50,4 90,62 10,62" fill="#fff" stroke="#C4102F" stroke-width="7"/><rect x="14" y="74" width="72" height="34" rx="4" fill="#fff" stroke="#1B1F27" stroke-width="5"/></svg>',
+    novice:'<svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="10" fill="#fff" stroke="#1B1F27" stroke-width="4"/><text x="50" y="72" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="58" fill="#C4102F" text-anchor="middle">A</text></svg>',
+    alcohol:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#C4102F" stroke-width="9"/><path d="M36 24 h28 l-5 16 v30 h-18 v-30 z" fill="none" stroke="#1B1F27" stroke-width="6" stroke-linejoin="round"/><line x1="16" y1="84" x2="84" y2="16" stroke="#C4102F" stroke-width="9" stroke-linecap="round"/></svg>',
+    drugs:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#C4102F" stroke-width="9"/><rect x="30" y="40" width="40" height="20" rx="10" fill="none" stroke="#1B1F27" stroke-width="6"/><line x1="50" y1="40" x2="50" y2="60" stroke="#1B1F27" stroke-width="5"/><line x1="16" y1="84" x2="84" y2="16" stroke="#C4102F" stroke-width="9" stroke-linecap="round"/></svg>',
+    seatbelt:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><circle cx="50" cy="34" r="10" fill="#fff"/><path d="M28 90 Q30 55 50 50 Q70 55 72 90" fill="none" stroke="#fff" stroke-width="7"/><path d="M30 40 L74 78" stroke="#F2C94C" stroke-width="9" stroke-linecap="round"/></svg>',
+    phone:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#C4102F" stroke-width="9"/><rect x="36" y="20" width="28" height="60" rx="7" fill="none" stroke="#1B1F27" stroke-width="6"/><line x1="16" y1="84" x2="84" y2="16" stroke="#C4102F" stroke-width="9" stroke-linecap="round"/></svg>',
+    bike:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><circle cx="34" cy="66" r="12" fill="none" stroke="#fff" stroke-width="5"/><circle cx="66" cy="66" r="12" fill="none" stroke="#fff" stroke-width="5"/><path d="M34 66 L50 38 L66 66 M42 52 L58 52 M50 38 L50 30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
+    roundaboutArrow:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><path d="M28 34a26 26 0 1 0 4 38" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/><path d="M22 62 l6 14 14-5" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    blinker:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><path d="M30 50 h26 M56 38 l14 12 -14 12" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    headlights:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B1F27"/><path d="M30 40 h20 l14 10 -14 10 h-20 z" fill="#F2C94C"/><line x1="66" y1="42" x2="86" y2="34" stroke="#F2C94C" stroke-width="4" stroke-linecap="round"/><line x1="66" y1="50" x2="88" y2="50" stroke="#F2C94C" stroke-width="4" stroke-linecap="round"/><line x1="66" y1="58" x2="86" y2="66" stroke="#F2C94C" stroke-width="4" stroke-linecap="round"/></svg>',
+    urgent:'<svg viewBox="0 0 100 100"><rect x="18" y="42" width="64" height="30" rx="8" fill="#C4102F"/><rect x="30" y="26" width="16" height="20" rx="4" fill="#1B4F8C"/><circle cx="30" cy="74" r="8" fill="#1B1F27"/><circle cx="70" cy="74" r="8" fill="#1B1F27"/><path d="M50 20 l6 12 h-12 z" fill="#F2C94C"/></svg>',
+    stopwatch:'<svg viewBox="0 0 100 100"><circle cx="50" cy="54" r="38" fill="#fff" stroke="#1B4F8C" stroke-width="8"/><line x1="50" y1="54" x2="50" y2="30" stroke="#1B1F27" stroke-width="6" stroke-linecap="round"/><line x1="50" y1="54" x2="66" y2="54" stroke="#1B1F27" stroke-width="6" stroke-linecap="round"/><line x1="38" y1="10" x2="62" y2="10" stroke="#1B4F8C" stroke-width="8" stroke-linecap="round"/></svg>',
+    wheelchair:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1B4F8C"/><circle cx="42" cy="30" r="8" fill="#fff"/><path d="M42 40 v18 h20" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="42" cy="74" r="16" fill="none" stroke="#fff" stroke-width="5"/></svg>',
+    crossing:'<svg viewBox="0 0 100 100"><rect x="4" y="42" width="92" height="4" fill="#8b9096"/><rect x="4" y="54" width="92" height="4" fill="#8b9096"/><path d="M50 4 v92" stroke="#8b9096" stroke-width="4" stroke-dasharray="8 6"/><rect x="28" y="30" width="20" height="11" rx="2" fill="#1B4F8C"/><rect x="54" y="59" width="20" height="11" rx="2" fill="#C4102F"/></svg>',
+    trafficLight:'<svg viewBox="0 0 100 100"><rect x="30" y="6" width="40" height="88" rx="10" fill="#1B1F27"/><circle cx="50" cy="26" r="11" fill="#4a1418"/><circle cx="50" cy="50" r="11" fill="#F2C94C"/><circle cx="50" cy="74" r="11" fill="#123018"/></svg>'
+  };
+
+export const SCENES = {
+    INTERSECTION:'<svg viewBox="0 0 300 200">'+
+      '<rect x="0" y="82" width="300" height="36" fill="#5B6068"/>'+
+      '<rect x="132" y="0" width="36" height="200" fill="#5B6068"/>'+
+      '<line x1="0" y1="100" x2="300" y2="100" stroke="#fff" stroke-width="2" stroke-dasharray="10 8" opacity="0.55"/>'+
+      '<line x1="150" y1="0" x2="150" y2="200" stroke="#fff" stroke-width="2" stroke-dasharray="10 8" opacity="0.55"/>'+
+      '<rect x="14" y="87" width="46" height="20" rx="5" fill="#1B4F8C"/><text x="37" y="101" font-size="11" fill="#fff" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700">A</text>'+
+      '<rect x="140" y="150" width="20" height="46" rx="5" fill="#C4102F"/><text x="150" y="177" font-size="11" fill="#fff" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700">B</text>'+
+      '<path d="M150 148 l-7 13 h14 z" fill="#C4102F"/>'+
+      '<text x="150" y="130" font-size="13" font-weight="700" fill="#C4102F" text-anchor="middle" font-family="Barlow Condensed, sans-serif" letter-spacing="1">PRIORITÉ</text>'+
+      '<path d="M64 97 h13 m0 -5 l7 5 -7 5" fill="none" stroke="#1B4F8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>'+
+      '</svg>',
+    ROUNDABOUT:'<svg viewBox="0 0 300 220">'+
+      '<rect x="132" y="0" width="36" height="44" fill="#5B6068"/>'+
+      '<rect x="132" y="176" width="36" height="44" fill="#5B6068"/>'+
+      '<rect x="0" y="92" width="44" height="36" fill="#5B6068"/>'+
+      '<rect x="256" y="92" width="44" height="36" fill="#5B6068"/>'+
+      '<circle cx="150" cy="110" r="66" fill="none" stroke="#5B6068" stroke-width="32"/>'+
+      '<circle cx="150" cy="110" r="34" fill="#6FA37A"/>'+
+      '<path d="M150 44 a66 66 0 0 0 -47 20" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="7 6" opacity="0.75"/>'+
+      '<path d="M103 65 l-5 11 12 -3" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>'+
+      '<polygon points="150,150 141,166 159,166" fill="#fff" stroke="#C4102F" stroke-width="4"/>'+
+      '<g transform="rotate(25 191 100)"><rect x="176" y="92" width="30" height="16" rx="4" fill="#C4102F"/></g>'+
+      '<text x="225" y="76" font-size="12" font-weight="700" fill="#C4102F" font-family="Barlow Condensed, sans-serif" letter-spacing="1">PRIORITÉ</text>'+
+      '<rect x="140" y="180" width="20" height="34" rx="4" fill="#1B4F8C"/><text x="150" y="201" font-size="10" fill="#fff" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700">B</text>'+
+      '</svg>'
+  };
+
+export const LEVELS = [
+    {min:0, name:'Apprenti code'},
+    {min:80, name:'Conducteur en herbe'},
+    {min:180, name:'Bonne route'},
+    {min:300, name:'Presque prêt'},
+    {min:450, name:"Prêt pour l'examen"},
+    {min:620, name:'Futur titulaire'}
+  ];
+
+export const MODULES = [
+    {id:'p1', title:'Priorités de base', sign:SIGN.stop,
+     blurb:'Qui passe en premier à une intersection ? Priorité à droite, STOP, cédez-le-passage et feux.',
+     scene:'INTERSECTION',
+     points:[
+       {s:SIGN.crossing, t:"Sans panneau ni feu, c'est la priorité à droite qui s'applique : le véhicule venant de votre droite passe avant vous."},
+       {s:SIGN.stop, t:"Le panneau STOP impose un arrêt total, même si la voie paraît libre, avant de céder le passage."},
+       {s:SIGN.yield, t:"Le panneau cédez-le-passage (triangle pointe en bas) n'oblige pas l'arrêt : on ralentit et on s'arrête seulement si nécessaire."},
+       {s:SIGN.priority, t:"Le losange jaune signale une route à priorité ; barré de noir, il annonce la fin de cette priorité."},
+       {s:SIGN.urgent, t:"Un véhicule prioritaire en intervention (pompiers, police, SAMU) passe toujours avant vous, même si vous êtes prioritaire."}
+     ],
+     questions:[
+       {sign:SIGN.crossing, q:"En l'absence de tout panneau, à une intersection entre deux routes de même importance en agglomération, qui a la priorité ?",
+        choices:["Le véhicule venant de la droite","Le véhicule le plus rapide","Le véhicule le plus gros","Celui qui arrive en premier"],
+        explain:"C'est la règle de la priorité à droite : sans signalisation, le véhicule qui vient de votre droite passe avant vous."},
+       {sign:SIGN.stop, q:"Un panneau STOP signifie :",
+        choices:["Il faut marquer un arrêt puis céder le passage à toute circulation","Il faut ralentir seulement si nécessaire","Il faut s'arrêter uniquement s'il y a un véhicule visible"],
+        explain:"Le STOP impose un arrêt complet, même si la voie semble libre, avant de céder le passage."},
+       {sign:SIGN.yield, q:"Le panneau triangulaire pointe en bas à bordure rouge (cédez-le-passage) impose-t-il un arrêt obligatoire comme le STOP ?",
+        choices:["Non, seulement si nécessaire pour céder le passage","Oui, toujours","Non, jamais, même avec un véhicule prioritaire"],
+        explain:"Contrairement au STOP, ce panneau n'oblige pas l'arrêt : on ralentit et on s'arrête seulement si un véhicule est prioritaire."},
+       {sign:SIGN.trafficLight, q:"Un feu tricolore clignotant orange signifie :",
+        choices:["Prudence : franchir avec précaution en cédant si nécessaire","Passage interdit","Priorité absolue, comme un feu vert"],
+        explain:"Le feu orange clignotant remplace souvent un feu éteint la nuit : on avance avec prudence, comme à une intersection sans signalisation prioritaire."},
+       {sign:SIGN.urgent, q:"Un véhicule de pompiers, gyrophare et sirène activés, arrive à une intersection où vous avez la priorité. Que faites-vous ?",
+        choices:["Je facilite son passage, même si j'ai la priorité","Je garde ma priorité car je suis arrivé le premier","J'accélère pour passer avant lui"],
+        explain:"Les véhicules d'intérêt général prioritaires ont toujours la priorité, quels que soient les panneaux ou la position."},
+       {sign:SIGN.priority, q:"Un losange jaune signale :",
+        choices:["Une route à caractère prioritaire","Une route dangereuse","Une zone de stationnement"],
+        explain:"Le losange jaune indique que vous circulez sur une voie à priorité ; barré de noir, il annonce la fin de cette priorité."}
+     ]},
+    {id:'p2', title:'Ronds-points & intersections', sign:SIGN.roundaboutArrow,
+     blurb:"Dans la grande majorité des ronds-points français, qui a la priorité ? Et comment bien signaler sa sortie ?",
+     scene:'ROUNDABOUT',
+     points:[
+       {s:SIGN.yield, t:"Dans la plupart des ronds-points, la priorité est à ceux qui sont déjà engagés dans l'anneau."},
+       {s:SIGN.blinker, t:"Le clignotant n'est pas obligatoire en entrant, mais il est obligatoire pour signaler votre sortie."},
+       {s:SIGN.roundaboutArrow, t:"Pour une sortie proche, restez sur la voie extérieure ; pour un tour plus long, prenez la voie intérieure."},
+       {s:SIGN.crossing, t:"À une intersection en T, la route qui s'arrête doit céder le passage à la route continue."},
+       {s:SIGN.crossing, t:"De rares ronds-points appliquent encore la priorité à droite classique : c'est le cas s'il n'y a pas de panneau cédez-le-passage à l'entrée."}
+     ],
+     questions:[
+       {sign:SIGN.yield, q:"Dans un rond-point classique (panneau cédez-le-passage à l'entrée), qui a la priorité ?",
+        choices:["Les véhicules déjà engagés dans l'anneau","Les véhicules qui entrent","Le véhicule le plus rapide"],
+        explain:"Sauf signalisation contraire, celui qui est déjà dans l'anneau est prioritaire sur celui qui entre."},
+       {sign:SIGN.blinker, q:"Faut-il mettre son clignotant en entrant dans un rond-point ?",
+        choices:["Non, ce n'est pas obligatoire en entrant","Oui, toujours obligatoire en entrant","Seulement la nuit"],
+        explain:"Le clignotant n'est obligatoire qu'en sortie, pour prévenir les autres usagers de votre changement de direction."},
+       {sign:SIGN.crossing, q:"À une intersection en T, la route qui se termine (barrée par la route principale) doit :",
+        choices:["Céder le passage à la route continue","Avoir la priorité car elle arrive de face","Cela dépend de la vitesse des véhicules"],
+        explain:"Sans signalisation contraire, une route qui s'arrête sur une autre doit céder le passage à la route continue."},
+       {sign:SIGN.crossing, q:"Certains ronds-points anciens appliquent la priorité à droite. Comment le repère-t-on ?",
+        choices:["Aucun panneau cédez-le-passage n'est présent à l'entrée","Il n'en existe plus du tout en France","C'est toujours signalé en bleu"],
+        explain:"Si l'entrée n'est pas marquée d'un panneau cédez-le-passage, la priorité à droite classique peut s'appliquer (rare mais existant)."},
+       {sign:SIGN.roundaboutArrow, q:"Dans un rond-point à deux voies, vous devez sortir à la prochaine sortie en étant entré par la voie de droite. Que faites-vous ?",
+        choices:["Je reste sur la voie de droite en surveillant les autres usagers","Je me place immédiatement sur la voie de gauche","Je m'arrête juste avant la sortie"],
+        explain:"Pour une sortie proche, on reste en général sur la voie extérieure en restant attentif aux véhicules qui coupent depuis la voie intérieure."},
+       {sign:SIGN.priority, q:"Sur une route prioritaire signalée par le losange jaune, à une intersection, devez-vous céder le passage ?",
+        choices:["Non, vous restez prioritaire","Oui, toujours","Seulement si un panneau STOP est visible en face"],
+        explain:"Le losange jaune indique justement que votre route conserve la priorité aux intersections suivantes, tant qu'il n'est pas barré."}
+     ]},
+    {id:'p3', title:'Signalisation', sign:SIGN.danger,
+     blurb:"Chaque forme et couleur de panneau a un sens précis : triangle, disque rouge, disque bleu, carré...",
+     points:[
+       {s:SIGN.danger, t:"Triangle à bordure rouge : panneau de danger."},
+       {s:SIGN.noOvertake, t:"Disque blanc à bordure rouge : panneau d'interdiction (le STOP, octogonal, fait exception)."},
+       {s:SIGN.obligation, t:"Disque bleu avec symbole blanc : panneau d'obligation."},
+       {s:SIGN.parking, t:"Carré ou rectangle bleu : panneau d'indication utile (parking, service, autoroute)."},
+       {s:SIGN.panonceau, t:"Un panonceau, placé sous un panneau principal, précise ou restreint sa portée (distance, horaires, véhicules concernés)."}
+     ],
+     questions:[
+       {sign:SIGN.danger, q:"Un panneau triangulaire à bordure rouge annonce en général :",
+        choices:["Un danger","Une interdiction","Une obligation"],
+        explain:"La forme triangulaire à bordure rouge est réservée aux panneaux de danger."},
+       {sign:SIGN.noOvertake, q:"Un panneau rond à fond blanc bordé de rouge indique généralement :",
+        choices:["Une interdiction","Une obligation","Une indication utile"],
+        explain:"Le disque blanc à bordure rouge est la forme classique des panneaux d'interdiction (le STOP, octogonal, fait exception)."},
+       {sign:SIGN.obligation, q:"Un panneau rond à fond bleu avec un symbole blanc indique :",
+        choices:["Une obligation","Une interdiction","Un danger"],
+        explain:"Le disque bleu signale une obligation (ex : direction obligatoire, piste cyclable obligatoire)."},
+       {sign:SIGN.parking, q:"Les panneaux carrés ou rectangulaires bleus servent le plus souvent à :",
+        choices:["Donner une indication (parking, autoroute, service)","Interdire une manœuvre","Annoncer un danger immédiat"],
+        explain:"La forme carrée ou rectangulaire bleue est utilisée pour les indications pratiques utiles à l'usager."},
+       {sign:SIGN.panonceau, q:"Un petit panneau rectangulaire placé sous un panneau principal s'appelle :",
+        choices:["Un panonceau, qui apporte une précision","Un panneau de rappel obligatoire","Un doublon sans valeur légale"],
+        explain:"Le panonceau précise ou restreint la portée du panneau principal (distance, catégorie de véhicules, horaires...)."},
+       {sign:SIGN.stop, q:"Le panneau STOP a une forme particulière parmi les panneaux d'interdiction. Laquelle ?",
+        choices:["Octogonale","Triangulaire","Carrée"],
+        explain:"Le STOP est le seul panneau octogonal du code de la route, reconnaissable même sale ou vu de dos."}
+     ]},
+    {id:'p4', title:'Vitesses & distances', sign:SIGN.speed('80'),
+     blurb:"Limitations de vitesse selon le type de route, règles du permis probatoire, et distance de sécurité.",
+     facts:[{l:'Agglomération',v:'50 km/h'},{l:'Autoroute',v:'130 km/h'},{l:'Probatoire',v:'-10 km/h'}],
+     points:[
+       {s:SIGN.speed('50'), t:"En agglomération, la vitesse par défaut est 50 km/h, réduite à 30 km/h en zone 30 et 20 km/h en zone de rencontre."},
+       {s:SIGN.speed('80'), t:"Hors agglomération, la limite par défaut est 80 km/h sur route bidirectionnelle sans séparateur (certains axes sont remontés à 90 km/h par le département)."},
+       {s:SIGN.speed('130'), t:"Sur autoroute, la limite est 130 km/h, réduite à 110 km/h sous la pluie et 50 km/h si la visibilité est inférieure à 50 m."},
+       {s:SIGN.novice, t:"En permis probatoire, on roule 10 km/h sous la limite générale dès qu'elle dépasse 80 km/h (donc 100 sur une voie à 110, 110 sur une autoroute à 130)."},
+       {s:SIGN.stopwatch, t:"La règle des deux secondes permet d'évaluer la distance de sécurité ; comptez au moins 3 secondes par mauvais temps."}
+     ],
+     questions:[
+       {sign:SIGN.speed('50'), q:"Quelle est la vitesse maximale par défaut en agglomération ?",
+        choices:["50 km/h","30 km/h","70 km/h"],
+        explain:"50 km/h est la limite par défaut en agglomération, sauf zone 30 ou zone de rencontre plus restrictive."},
+       {sign:SIGN.speed('110'), q:"Sur autoroute par temps de pluie, la vitesse maximale autorisée est :",
+        choices:["110 km/h","130 km/h","90 km/h"],
+        explain:"La limite de 130 km/h est réduite à 110 km/h sur autoroute lorsqu'il pleut."},
+       {sign:SIGN.novice, q:"Un conducteur en permis probatoire, sur une route normalement limitée à 110 km/h, doit rouler à :",
+        choices:["100 km/h maximum","110 km/h comme les autres conducteurs","90 km/h maximum"],
+        explain:"Les conducteurs novices roulent 10 km/h sous la limite générale dès que celle-ci dépasse 80 km/h."},
+       {sign:SIGN.stopwatch, q:"La « règle des deux secondes » permet d'évaluer :",
+        choices:["La distance de sécurité avec le véhicule qui précède","Le temps de freinage total du véhicule","La durée moyenne d'un dépassement"],
+        explain:"En comptant deux secondes entre le passage du véhicule précédent et le vôtre devant un repère fixe, on vérifie une distance de sécurité suffisante."},
+       {sign:SIGN.stopwatch, q:"Par mauvais temps ou faible visibilité, la distance de sécurité recommandée doit être :",
+        choices:["Augmentée (par exemple 3 secondes ou plus)","Identique, quelle que soit la météo","Réduite pour compenser la lenteur ambiante"],
+        explain:"Le temps de réaction et la distance de freinage augmentent par mauvais temps : il faut donc allonger la distance de sécurité."},
+       {sign:SIGN.speed('80'), q:"Hors agglomération, sur une route à double sens sans séparateur central, la vitesse est en général limitée à :",
+        choices:["80 km/h (ou 90 km/h si le département l'a signalé)","90 km/h partout, sans exception","70 km/h partout, sans exception"],
+        explain:"Depuis 2018, la limite par défaut est de 80 km/h ; certains départements ont relevé à 90 km/h certains axes signalés."}
+     ]},
+    {id:'p5', title:'Sécurité, alcool & stupéfiants', sign:SIGN.seatbelt,
+     blurb:"Taux d'alcool autorisés, stupéfiants, ceinture, téléphone et équipements de sécurité obligatoires.",
+     facts:[{l:'Alcool',v:'0,5 g/L'},{l:'Probatoire',v:'0,2 g/L'},{l:'Stupéfiants',v:'0 toléré'}],
+     points:[
+       {s:SIGN.alcohol, t:"Le taux d'alcool légal maximal est 0,5 g/L de sang (0,2 g/L en permis probatoire ou pour la conduite de transport en commun)."},
+       {s:SIGN.drugs, t:"Pour les stupéfiants, la tolérance est nulle : toute trace détectée constitue une infraction."},
+       {s:SIGN.seatbelt, t:"La ceinture de sécurité est obligatoire à toutes les places équipées, y compris à l'arrière."},
+       {s:SIGN.phone, t:"Le téléphone tenu en main est interdit dès que le véhicule roule ou est arrêté à un feu, moteur allumé."},
+       {s:SIGN.danger, t:"Le gilet de sécurité et le triangle de présignalisation sont obligatoires à bord et doivent être utilisés en cas de panne ou d'arrêt d'urgence."}
+     ],
+     questions:[
+       {sign:SIGN.alcohol, q:"Le taux d'alcool maximal autorisé pour un permis probatoire est de :",
+        choices:["0,2 g/L de sang","0,5 g/L de sang","0,8 g/L de sang"],
+        explain:"Les conducteurs en période probatoire (et les conducteurs de transport en commun) sont soumis à un taux plus strict : 0,2 g/L."},
+       {sign:SIGN.drugs, q:"Concernant les stupéfiants au volant, la tolérance légale est :",
+        choices:["Zéro : toute trace détectée est une infraction","Identique à l'alcool, soit 0,5 g/L","Tolérée en dessous d'un certain seuil"],
+        explain:"Contrairement à l'alcool, il n'existe aucun seuil toléré pour les stupéfiants : toute présence détectée constitue une infraction."},
+       {sign:SIGN.seatbelt, q:"Le port de la ceinture de sécurité est obligatoire :",
+        choices:["À toutes les places équipées, y compris à l'arrière","Uniquement à l'avant du véhicule","Uniquement hors agglomération"],
+        explain:"Toute personne à bord doit porter sa ceinture, à l'avant comme à l'arrière, dès qu'une place en est équipée."},
+       {sign:SIGN.phone, q:"Utiliser un téléphone tenu en main en conduisant est :",
+        choices:["Interdit, même à l'arrêt à un feu rouge","Autorisé brièvement entre deux virages","Autorisé si le véhicule roule à faible vitesse"],
+        explain:"Le téléphone tenu en main est interdit dès que le moteur tourne et que le véhicule circule, y compris arrêté à un feu."},
+       {sign:SIGN.danger, q:"En cas d'arrêt d'urgence sur la chaussée ou son abord après une panne, le conducteur doit :",
+        choices:["Porter le gilet de sécurité et poser le triangle de présignalisation","Se contenter d'allumer ses feux de détresse","Rester dans le véhicule sans sortir"],
+        explain:"Le gilet et le triangle sont obligatoires à bord et doivent être utilisés pour signaler le danger aux autres usagers."},
+       {sign:SIGN.phone, q:"Le port d'écouteurs ou d'un casque audio dans les deux oreilles en conduisant est :",
+        choices:["Interdit","Autorisé si le volume est faible","Autorisé sur autoroute uniquement"],
+        explain:"Porter un dispositif à son oreille (écouteurs, casque) est interdit au volant, qu'il diffuse de la musique ou un appel."}
+     ]},
+    {id:'p6', title:'Dépassement & croisement', sign:SIGN.noOvertake,
+     blurb:"Quand peut-on dépasser en toute sécurité, et comment se comporter en croisement, notamment de nuit ?",
+     facts:[{l:'Cycliste (agglo)',v:'1 m'},{l:'Cycliste (hors agglo)',v:'1,5 m'}],
+     points:[
+       {s:SIGN.noOvertake, t:"Le dépassement est interdit dès que la ligne axiale est continue."},
+       {s:SIGN.danger, t:"Il est aussi interdit dans un virage ou à l'approche d'un sommet de côte sans visibilité suffisante, ainsi qu'aux intersections en général."},
+       {s:SIGN.blinker, t:"Avant de dépasser : clignotant, vérification qu'aucun véhicule ne dépasse déjà, et distance suffisante pour revenir sans danger."},
+       {s:SIGN.headlights, t:"De nuit, dès qu'un autre véhicule est visible, on roule en feux de croisement (codes) pour ne pas éblouir."},
+       {s:SIGN.bike, t:"La distance latérale minimale pour dépasser un cycliste est de 1 m en agglomération et 1,5 m hors agglomération."}
+     ],
+     questions:[
+       {sign:SIGN.noOvertake, q:"Le dépassement est interdit lorsque la ligne axiale est :",
+        choices:["Continue","Discontinue","Peu importe le type de ligne"],
+        explain:"Une ligne continue interdit le franchissement, donc le dépassement, tant qu'elle n'est pas redevenue discontinue."},
+       {sign:SIGN.danger, q:"Dépasser à l'approche d'un sommet de côte ou dans un virage sans visibilité est :",
+        choices:["Interdit, sauf signalisation contraire","Autorisé si aucun véhicule n'est visible","Autorisé de nuit uniquement"],
+        explain:"Le manque de visibilité empêche de vérifier que la voie est libre assez loin : le dépassement y est interdit."},
+       {sign:SIGN.headlights, q:"De nuit, en présence d'un véhicule venant en face, vous devez circuler :",
+        choices:["En feux de croisement (codes)","En feux de route","Sans aucun éclairage"],
+        explain:"Les feux de route éblouissent les autres usagers : on passe en codes dès qu'un véhicule est visible en face ou devant."},
+       {sign:SIGN.blinker, q:"Avant de dépasser un véhicule, il faut notamment :",
+        choices:["Mettre son clignotant et vérifier qu'aucun véhicule ne dépasse déjà","Accélérer sans prévenir pour gagner du temps","Klaxonner obligatoirement avant chaque dépassement"],
+        explain:"Le clignotant prévient les autres usagers, et il faut s'assurer qu'aucun dépassement n'est déjà en cours devant ou derrière soi."},
+       {sign:SIGN.crossing, q:"Dépasser à une intersection est en général :",
+        choices:["Interdit, sauf si vous êtes sur une route à priorité ou si un panneau l'autorise","Toujours autorisé si la ligne est discontinue","Autorisé seulement en agglomération"],
+        explain:"Le risque d'un véhicule surgissant de la voie transversale rend le dépassement dangereux et généralement interdit aux intersections."},
+       {sign:SIGN.bike, q:"Pour dépasser un cycliste hors agglomération, la distance latérale minimale à respecter est :",
+        choices:["1,5 mètre","0,5 mètre","Aucune distance minimale n'est fixée"],
+        explain:"Le code impose 1,5 m hors agglomération (1 m en agglomération) pour protéger les cyclistes lors d'un dépassement."}
+     ]},
+    {id:'p7', title:'Stationnement & arrêt', sign:SIGN.parking,
+     blurb:"Où peut-on s'arrêter ou stationner, et que risque-t-on en cas d'infraction ?",
+     points:[
+       {s:SIGN.parking, t:"L'arrêt est une immobilisation brève, conducteur présent et prêt à repartir ; le stationnement est plus prolongé."},
+       {s:SIGN.noParking, t:"Le stationnement est interdit à moins de 5 m d'un passage piéton, devant une bouche d'incendie, sur un trottoir ou en double file prolongée."},
+       {s:SIGN.wheelchair, t:"Se garer sur une place handicapée sans la carte adéquate est un stationnement très gênant, sanctionné plus lourdement."},
+       {s:SIGN.danger, t:"Un stationnement dit dangereux (sortie de virage, passage piéton) est la catégorie la plus sévèrement sanctionnée, avec retrait de points possible."}
+     ],
+     questions:[
+       {sign:SIGN.noParking, q:"Le stationnement est interdit à moins de :",
+        choices:["5 mètres d'un passage piéton","20 mètres d'un passage piéton","1 mètre d'un passage piéton"],
+        explain:"La règle des 5 mètres avant un passage piéton garantit la visibilité entre piétons et conducteurs."},
+       {sign:SIGN.parking, q:"La différence entre « arrêt » et « stationnement » est que :",
+        choices:["Lors d'un arrêt, le conducteur reste à bord ou proche et prêt à repartir","En arrêt, le moteur doit toujours être éteint","Un stationnement dure toujours moins de 5 minutes"],
+        explain:"L'arrêt est une immobilisation brève avec conducteur présent ; le stationnement est plus prolongé, conducteur présent ou non."},
+       {sign:SIGN.wheelchair, q:"Se garer sur un emplacement réservé aux personnes handicapées sans la carte adéquate est classé comme :",
+        choices:["Stationnement très gênant, sanctionné plus lourdement","Une simple erreur sans sanction","Autorisé s'il reste de la place ailleurs"],
+        explain:"C'est un stationnement très gênant, avec une amende nettement plus élevée qu'un stationnement gênant classique."},
+       {sign:SIGN.noParking, q:"Stationner devant une bouche d'incendie est :",
+        choices:["Interdit, quelle que soit la durée","Autorisé moins de 5 minutes","Autorisé si les feux de détresse sont allumés"],
+        explain:"L'accès aux bouches d'incendie doit rester libre en permanence pour les secours."},
+       {sign:SIGN.noParking, q:"Le stationnement en double file est :",
+        choices:["Interdit, sauf arrêt très bref sans gêner la circulation","Toujours autorisé en centre-ville","Autorisé la nuit uniquement"],
+        explain:"Le double file gêne fortement la circulation et n'est tolérable que pour un arrêt très bref, sans quitter son véhicule longtemps."},
+       {sign:SIGN.danger, q:"Un stationnement jugé « dangereux » (ex : sur un passage piéton, en sortie de virage) peut entraîner :",
+        choices:["Une amende plus élevée et un retrait de points","Seulement un avertissement oral","Aucune sanction si le véhicule reste bien visible"],
+        explain:"Le stationnement dangereux est la catégorie la plus sévèrement sanctionnée, car il met directement en danger les autres usagers."}
+     ]},
+    {id:'p8', title:'Piétons, cyclistes & zones', sign:SIGN.pedestrian,
+     blurb:"Zone 30, zone de rencontre, aire piétonne : qui a la priorité et à quelle vitesse peut-on y circuler ?",
+     facts:[{l:'Zone de rencontre',v:'20 km/h'},{l:'Zone 30',v:'30 km/h'}],
+     points:[
+       {s:SIGN.pedestrian, t:"Un piéton engagé sur un passage piéton, avec ou sans feu, est toujours prioritaire."},
+       {s:SIGN.pedestrian, t:"Dans une zone de rencontre (20 km/h), les piétons peuvent circuler sur toute la largeur de la voie et sont prioritaires."},
+       {s:SIGN.zone30, t:"Dans une zone 30, la vitesse est limitée à 30 km/h, souvent avec double sens cyclable."},
+       {s:SIGN.pedestrian, t:"Dans une aire piétonne, seuls les véhicules de desserte peuvent circuler, à l'allure du pas, en cédant toujours le passage."},
+       {s:SIGN.bike, t:"Un panonceau « sauf vélos » sous un sens interdit autorise les cyclistes à circuler à contresens dans cette rue."}
+     ],
+     questions:[
+       {sign:SIGN.pedestrian, q:"Face à un piéton engagé sur un passage piéton sans feu, le conducteur doit :",
+        choices:["Céder le passage et le laisser traverser","Klaxonner pour qu'il accélère","Passer s'il n'y a pas de feu rouge visible"],
+        explain:"Un piéton engagé sur un passage piéton est toujours prioritaire, même en l'absence de feu."},
+       {sign:SIGN.pedestrian, q:"Dans une « zone de rencontre », la vitesse est limitée à :",
+        choices:["20 km/h, et les piétons sont prioritaires partout","30 km/h, comme une zone 30","50 km/h avec prudence"],
+        explain:"La zone de rencontre impose 20 km/h maximum ; les piétons peuvent circuler sur toute la largeur de la voie et sont prioritaires."},
+       {sign:SIGN.zone30, q:"Dans une « zone 30 », la vitesse maximale autorisée est :",
+        choices:["30 km/h","20 km/h","50 km/h"],
+        explain:"Comme son nom l'indique, la zone 30 limite la vitesse à 30 km/h, souvent avec double sens cyclable."},
+       {sign:SIGN.pedestrian, q:"Dans une aire piétonne, la circulation des véhicules est :",
+        choices:["Autorisée seulement à l'allure du pas pour desserte, avec priorité aux piétons","Totalement interdite en permanence","Autorisée normalement comme une rue classique"],
+        explain:"Seuls les véhicules de desserte ou de livraison peuvent y circuler, à allure de piéton, en cédant toujours le passage."},
+       {sign:SIGN.bike, q:"Pour dépasser un cycliste en agglomération, la distance latérale minimale est :",
+        choices:["1 mètre","1,5 mètre","2 mètres"],
+        explain:"En agglomération, la distance minimale est de 1 mètre (1,5 m hors agglomération)."},
+       {sign:SIGN.bike, q:"Un cycliste peut-il circuler à contresens dans une rue à sens unique signalée par un panonceau « sauf vélos » ?",
+        choices:["Oui, c'est justement le sens de cette signalisation","Non, jamais, quel que soit le panneau","Seulement de nuit"],
+        explain:"Le panonceau « sauf vélos » sous un sens interdit autorise justement les cyclistes à circuler à contresens dans cette rue."}
+     ]}
+  ];

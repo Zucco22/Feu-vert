@@ -1,0 +1,73 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LEVELS } from '../data/content';
+
+// Mirrors the prototype's localStorage state, but persisted on-device.
+// NEXT STEP (cloud sync + accounts): replace load/save with Supabase calls.
+
+const STORE_KEY = 'feuvert_state_v1';
+
+const EMPTY = { xp: 0, streak: 0, lastActive: null, progress: {}, history: [] };
+
+export async function loadState() {
+  try {
+    const raw = await AsyncStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      return { ...EMPTY, ...s, progress: s.progress || {}, history: s.history || [] };
+    }
+  } catch (e) {}
+  return { ...EMPTY };
+}
+
+export async function saveState(state) {
+  try {
+    await AsyncStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+// Increment the daily streak (same rule as the prototype).
+export function bumpStreak(state) {
+  const today = new Date();
+  const todayISO = today.toISOString().slice(0, 10);
+  if (state.lastActive !== todayISO) {
+    const y = new Date(today);
+    y.setDate(y.getDate() - 1);
+    const yISO = y.toISOString().slice(0, 10);
+    state.streak = state.lastActive === yISO ? (state.streak || 0) + 1 : 1;
+    state.lastActive = todayISO;
+  } else if (!state.streak) {
+    state.streak = 1;
+  }
+  return state;
+}
+
+export function levelInfo(xp) {
+  let idx = 0;
+  for (let i = 0; i < LEVELS.length; i++) {
+    if (xp >= LEVELS[i].min) idx = i;
+  }
+  const cur = LEVELS[idx];
+  const next = LEVELS[idx + 1];
+  const pct = next ? Math.round(((xp - cur.min) / (next.min - cur.min)) * 100) : 100;
+  return { name: cur.name, next, pct, xp };
+}
+
+// Record a finished lesson: award XP, save best score + stars, add to history.
+export function recordResult(state, mod, correct, total, gainedXp) {
+  const pct = Math.round((correct / total) * 100);
+  const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+  const prev = state.progress[mod.id] || { bestPct: 0, stars: 0 };
+  state.progress[mod.id] = {
+    bestPct: Math.max(prev.bestPct, pct),
+    stars: Math.max(prev.stars, stars),
+  };
+  state.xp += gainedXp;
+  state.history.unshift({
+    date: new Date().toISOString().slice(0, 10),
+    title: mod.title,
+    pct,
+    xp: gainedXp,
+  });
+  state.history = state.history.slice(0, 30);
+  return { pct, stars };
+}
