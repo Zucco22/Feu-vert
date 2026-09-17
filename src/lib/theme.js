@@ -22,6 +22,8 @@ const LIGHT = {
   correctBg: '#D1FAE5',
   incorrectBg: '#FEE2E2',
   selectedBg: '#E0F4FF',
+  road: '#CBD2D9',
+  roadLine: '#FFFFFF',
 };
 
 const DARK = {
@@ -46,6 +48,8 @@ const DARK = {
   correctBg: '#064E3B',
   incorrectBg: '#7F1D1D',
   selectedBg: '#0C4A6E',
+  road: '#2B3240',
+  roadLine: '#E5E9F0',
 };
 
 export function useColors() {

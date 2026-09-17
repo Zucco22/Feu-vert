@@ -1,9 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 import { useColors, HEARTS_START, XP_PER_CORRECT } from '../lib/theme';
+import { useMuted, useSoundEffects } from '../lib/sound';
 import { recordResult } from '../lib/storage';
+import { SCENES } from '../data/content';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
+import MuteButton from '../components/MuteButton';
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -29,6 +33,8 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 export default function Lesson({ mod, state, onCommit, onExit }) {
   const C = useColors();
   const styles = useMemo(() => makeStyles(C), [C]);
+  const [muted, toggleMuted] = useMuted();
+  const { playCorrect, playIncorrect, playComplete } = useSoundEffects(muted);
 
   const [phase, setPhase] = useState('intro');
   const deck = useMemo(() => buildDeck(mod.questions), [mod]);
@@ -51,8 +57,10 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
     if (isCorrect) {
       setCorrectCount((c) => c + 1);
       setGainedXp((x) => x + XP_PER_CORRECT);
+      playCorrect();
     } else {
       setHearts((h) => Math.max(0, h - 1));
+      playIncorrect();
     }
   }
 
@@ -70,6 +78,7 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   function finish() {
     const next = { ...state, progress: { ...state.progress }, history: [...state.history] };
     const r = recordResult(next, mod, correctCount, total, gainedXp);
+    if (r.pct >= 70) playComplete();
     setResult(r);
     setPhase('summary');
     onCommit(next);
@@ -79,13 +88,19 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   if (phase === 'intro') {
     return (
       <View style={styles.overlay}>
-        <Header onClose={onExit} C={C} />
+        <Header onClose={onExit} muted={muted} onToggleMuted={toggleMuted} C={C} />
         <ScrollView contentContainerStyle={styles.body}>
           <View style={styles.badge}>
             <Sign xml={mod.sign} size={56} />
           </View>
           <Text style={styles.h2}>{mod.title}</Text>
           <Text style={styles.blurb}>{mod.blurb}</Text>
+
+          {mod.scene && SCENES[mod.scene] ? (
+            <View style={styles.sceneBox}>
+              <SvgXml xml={SCENES[mod.scene]} width="100%" height="100%" />
+            </View>
+          ) : null}
 
           {mod.facts ? (
             <View style={styles.factsRow}>
@@ -121,7 +136,7 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
     const summaryMood = result.pct >= 70 ? 'happy' : 'sad';
     return (
       <View style={styles.overlay}>
-        <Header onClose={onExit} C={C} />
+        <Header onClose={onExit} muted={muted} onToggleMuted={toggleMuted} C={C} />
         <ScrollView contentContainerStyle={styles.body}>
           <View style={{ alignItems: 'center', marginVertical: 8 }}>
             <MascoLight mood={summaryMood} size={90} />
@@ -161,7 +176,14 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
 
   return (
     <View style={styles.overlay}>
-      <Header onClose={onExit} progress={(qi + (answered ? 1 : 0)) / total} hearts={hearts} C={C} />
+      <Header
+        onClose={onExit}
+        progress={(qi + (answered ? 1 : 0)) / total}
+        hearts={hearts}
+        muted={muted}
+        onToggleMuted={toggleMuted}
+        C={C}
+      />
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.qHeader}>
           <Sign xml={q.sign} size={54} />
@@ -215,7 +237,7 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   );
 }
 
-function Header({ onClose, progress, hearts, C }) {
+function Header({ onClose, progress, hearts, muted, onToggleMuted, C }) {
   return (
     <View style={[hStyles.row, { borderBottomColor: C.border }]}>
       <Pressable onPress={onClose} style={hStyles.closeBtn}>
@@ -237,6 +259,7 @@ function Header({ onClose, progress, hearts, C }) {
           ))}
         </View>
       ) : null}
+      <MuteButton muted={muted} onToggle={onToggleMuted} />
     </View>
   );
 }
@@ -265,6 +288,15 @@ function makeStyles(C) {
     },
     h2: { fontSize: 24, fontWeight: '800', color: C.text, marginTop: 12 },
     blurb: { fontSize: 15, color: C.textMuted, lineHeight: 22, marginTop: 8 },
+    sceneBox: {
+      width: '100%',
+      aspectRatio: 300 / 200,
+      borderRadius: 16,
+      overflow: 'hidden',
+      marginTop: 14,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
     factsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 14 },
     factChip: {
       flexDirection: 'row',

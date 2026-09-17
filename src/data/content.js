@@ -43,19 +43,31 @@ export const SCENES = {
       '<text x="150" y="130" font-size="13" font-weight="700" fill="#C4102F" text-anchor="middle" font-family="Barlow Condensed, sans-serif" letter-spacing="1">PRIORITÉ</text>'+
       '<path d="M64 97 h13 m0 -5 l7 5 -7 5" fill="none" stroke="#1B4F8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>'+
       '</svg>',
-    ROUNDABOUT:'<svg viewBox="0 0 300 220">'+
-      '<rect x="132" y="0" width="36" height="44" fill="#5B6068"/>'+
-      '<rect x="132" y="176" width="36" height="44" fill="#5B6068"/>'+
-      '<rect x="0" y="92" width="44" height="36" fill="#5B6068"/>'+
-      '<rect x="256" y="92" width="44" height="36" fill="#5B6068"/>'+
-      '<circle cx="150" cy="110" r="66" fill="none" stroke="#5B6068" stroke-width="32"/>'+
-      '<circle cx="150" cy="110" r="34" fill="#6FA37A"/>'+
-      '<path d="M150 44 a66 66 0 0 0 -47 20" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="7 6" opacity="0.75"/>'+
-      '<path d="M103 65 l-5 11 12 -3" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>'+
-      '<polygon points="150,150 141,166 159,166" fill="#fff" stroke="#C4102F" stroke-width="4"/>'+
-      '<g transform="rotate(25 191 100)"><rect x="176" y="92" width="30" height="16" rx="4" fill="#C4102F"/></g>'+
-      '<text x="225" y="76" font-size="12" font-weight="700" fill="#C4102F" font-family="Barlow Condensed, sans-serif" letter-spacing="1">PRIORITÉ</text>'+
-      '<rect x="140" y="180" width="20" height="34" rx="4" fill="#1B4F8C"/><text x="150" y="201" font-size="10" fill="#fff" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700">B</text>'+
+    // Vue de dessus : anneau gris, îlot central vert, 4 routes d'accès, marquages
+    // blancs en pointillés, flèches de circulation dans le sens anti-horaire (France), 2 voitures.
+    ROUNDABOUT:'<svg viewBox="0 0 300 200">'+
+      '<rect x="0" y="0" width="300" height="200" fill="#E7ECEF"/>'+
+      '<rect x="133" y="0" width="34" height="28" fill="#5B6068"/>'+
+      '<rect x="133" y="172" width="34" height="28" fill="#5B6068"/>'+
+      '<rect x="0" y="83" width="78" height="34" fill="#5B6068"/>'+
+      '<rect x="222" y="83" width="78" height="34" fill="#5B6068"/>'+
+      '<line x1="150" y1="0" x2="150" y2="28" stroke="#fff" stroke-width="2" stroke-dasharray="6 5" opacity="0.85"/>'+
+      '<line x1="150" y1="172" x2="150" y2="200" stroke="#fff" stroke-width="2" stroke-dasharray="6 5" opacity="0.85"/>'+
+      '<line x1="0" y1="100" x2="78" y2="100" stroke="#fff" stroke-width="2" stroke-dasharray="6 5" opacity="0.85"/>'+
+      '<line x1="222" y1="100" x2="300" y2="100" stroke="#fff" stroke-width="2" stroke-dasharray="6 5" opacity="0.85"/>'+
+      '<circle cx="150" cy="100" r="56" fill="none" stroke="#5B6068" stroke-width="32"/>'+
+      '<circle cx="150" cy="100" r="56" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="9 8" opacity="0.8"/>'+
+      '<circle cx="150" cy="100" r="72" fill="none" stroke="#3E4450" stroke-width="1.5"/>'+
+      '<circle cx="150" cy="100" r="40" fill="none" stroke="#3E4450" stroke-width="1.5"/>'+
+      '<circle cx="150" cy="100" r="38" fill="#6FA37A"/>'+
+      '<circle cx="150" cy="100" r="38" fill="none" stroke="#4F7D5B" stroke-width="2"/>'+
+      '<circle cx="150" cy="100" r="10" fill="#5C9468" opacity="0.7"/>'+
+      '<polygon points="185.7,56.5 196.7,61.1 190.3,67.5" fill="#FFFFFF" opacity="0.95"/>'+
+      '<polygon points="193.5,135.7 188.9,146.7 182.5,140.3" fill="#FFFFFF" opacity="0.95"/>'+
+      '<polygon points="114.3,143.5 103.3,138.9 109.7,132.5" fill="#FFFFFF" opacity="0.95"/>'+
+      '<polygon points="106.5,64.3 111.1,53.3 117.5,59.7" fill="#FFFFFF" opacity="0.95"/>'+
+      '<g transform="translate(258 90) rotate(180)"><rect x="-10" y="-5.5" width="20" height="11" rx="3.5" fill="#E4572E" stroke="#1B1F27" stroke-width="1.2"/><rect x="2.5" y="-4" width="5.5" height="8" rx="1.5" fill="#DCEFFB" opacity="0.9"/><circle cx="-5" cy="-5.5" r="1.6" fill="#1B1F27"/><circle cx="-5" cy="5.5" r="1.6" fill="#1B1F27"/><circle cx="5" cy="-5.5" r="1.6" fill="#1B1F27"/><circle cx="5" cy="5.5" r="1.6" fill="#1B1F27"/></g>'+
+      '<g transform="translate(97.4 119.2) rotate(70)"><rect x="-10" y="-5.5" width="20" height="11" rx="3.5" fill="#1B4F8C" stroke="#1B1F27" stroke-width="1.2"/><rect x="2.5" y="-4" width="5.5" height="8" rx="1.5" fill="#DCEFFB" opacity="0.9"/><circle cx="-5" cy="-5.5" r="1.6" fill="#1B1F27"/><circle cx="-5" cy="5.5" r="1.6" fill="#1B1F27"/><circle cx="5" cy="-5.5" r="1.6" fill="#1B1F27"/><circle cx="5" cy="5.5" r="1.6" fill="#1B1F27"/></g>'+
       '</svg>'
   };
 

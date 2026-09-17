@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useColors } from '../lib/theme';
+import { useMuted, useSoundEffects } from '../lib/sound';
 import { MODULES } from '../data/content';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
+import MuteButton from '../components/MuteButton';
 
 const EXAM_SIZE = 40;
 const PASS = 35;
@@ -41,6 +43,8 @@ function fmtTime(sec) {
 export default function Exam({ state, onCommit, onExit }) {
   const C = useColors();
   const styles = useMemo(() => makeStyles(C), [C]);
+  const [muted, toggleMuted] = useMuted();
+  const { playComplete } = useSoundEffects(muted);
 
   const deck = useMemo(buildExam, []);
   const total = deck.length;
@@ -87,6 +91,7 @@ export default function Exam({ state, onCommit, onExit }) {
       xp: gainedXp,
     });
     next.history = next.history.slice(0, 30);
+    if (passed) playComplete();
     setSavedResult({ correct, pct, passed, gainedXp });
     setPhase('result');
     onCommit(next);
@@ -101,7 +106,8 @@ export default function Exam({ state, onCommit, onExit }) {
           <Pressable onPress={onExit} style={styles.closeBtn}>
             <Text style={{ fontSize: 22, color: C.textMuted }}>✕</Text>
           </Pressable>
-          <Text style={styles.headTitle}>Résultat de l'examen</Text>
+          <Text style={[styles.headTitle, { flex: 1 }]}>Résultat de l'examen</Text>
+          <MuteButton muted={muted} onToggle={toggleMuted} />
         </View>
         <ScrollView contentContainerStyle={styles.body}>
           <View style={{ alignItems: 'center', marginBottom: 12 }}>
@@ -178,6 +184,7 @@ export default function Exam({ state, onCommit, onExit }) {
           <View style={[styles.barFill, { width: `${(qi / total) * 100}%`, backgroundColor: C.accent }]} />
         </View>
         <Text style={styles.timer}>{fmtTime(elapsed)}</Text>
+        <MuteButton muted={muted} onToggle={toggleMuted} />
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>

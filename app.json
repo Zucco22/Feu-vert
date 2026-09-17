@@ -22,6 +22,9 @@
     },
     "splash": {
       "backgroundColor": "#58CC02"
-    }
+    },
+    "plugins": [
+      "expo-audio"
+    ]
   }
 }
