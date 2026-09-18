@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, ActivityIndicator, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColors, useEffectiveScheme } from './src/lib/theme';
 import { ThemeModeContext, useThemeModeState } from './src/lib/themeMode';
 import { loadState, saveState, bumpStreak, mergeStates } from './src/lib/storage';
@@ -11,7 +12,10 @@ import Profile from './src/screens/Profile';
 import Lesson from './src/screens/Lesson';
 import Exam from './src/screens/Exam';
 import Settings from './src/screens/Settings';
+import Onboarding from './src/screens/Onboarding';
 import TabBar from './src/components/TabBar';
+
+const ONBOARDING_KEY = 'feuvert_onboarding_v1';
 
 export default function App() {
   const themeModeState = useThemeModeState();
@@ -31,6 +35,7 @@ function AppInner() {
   const [activeModule, setActiveModule] = useState(null);
   const [examOpen, setExamOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(undefined); // undefined = still loading
   const syncedUserId = useRef(null);
 
   useEffect(() => {
@@ -39,6 +44,18 @@ function AppInner() {
       await saveState(s);
       setState(s);
     })();
+    (async () => {
+      let seen = false;
+      try {
+        seen = (await AsyncStorage.getItem(ONBOARDING_KEY)) === '1';
+      } catch (e) {}
+      setOnboardingDone(seen);
+    })();
+  }, []);
+
+  const finishOnboarding = useCallback(() => {
+    setOnboardingDone(true);
+    AsyncStorage.setItem(ONBOARDING_KEY, '1').catch(() => {});
   }, []);
 
   // On login, merge local progress with whatever's already saved in the
@@ -69,7 +86,7 @@ function AppInner() {
     [auth.user]
   );
 
-  if (!state) {
+  if (!state || onboardingDone === undefined) {
     return (
       <View style={{ flex: 1, backgroundColor: C.bg, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={C.accent} size="large" />
@@ -83,7 +100,9 @@ function AppInner() {
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={C.bg}
       />
-      {examOpen ? (
+      {!onboardingDone ? (
+        <Onboarding onDone={finishOnboarding} />
+      ) : examOpen ? (
         <Exam state={state} onCommit={commit} onExit={() => setExamOpen(false)} />
       ) : activeModule ? (
         <Lesson
