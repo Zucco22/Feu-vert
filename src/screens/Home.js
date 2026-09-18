@@ -56,13 +56,19 @@ function buildRoadPath(positions) {
   return d;
 }
 
-export default function Home({ state, onOpenModule, onOpenExam }) {
+export default function Home({ state, onOpenModule, onOpenExam, onOpenSettings }) {
   const C = useColors();
   const styles = useMemo(() => makeStyles(C), [C]);
   const lvl = levelInfo(state.xp);
   const done = Object.keys(state.progress).length;
   const [muted, toggleMuted] = useMuted();
   const mistakeCount = (state.mistakes || []).length;
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const xpToday = state.xpTodayDate === todayISO ? state.xpToday || 0 : 0;
+  const dailyGoal = state.dailyGoal || 20;
+  const goalPct = Math.min(100, Math.round((xpToday / dailyGoal) * 100));
+  const goalReached = xpToday >= dailyGoal;
 
   const [pathWidth, setPathWidth] = useState(Dimensions.get('window').width - 32);
   const positions = useMemo(() => computePositions(pathWidth), [pathWidth]);
@@ -90,6 +96,9 @@ export default function Home({ state, onOpenModule, onOpenExam }) {
           <Text style={[styles.stat, { color: C.blueDark }]}>⚡ {state.xp}</Text>
           <Text style={[styles.stat, { color: C.flameDark }]}>🔥 {state.streak}</Text>
           <MuteButton muted={muted} onToggle={toggleMuted} />
+          <Pressable onPress={onOpenSettings} style={styles.gearBtn} hitSlop={8}>
+            <Text style={{ fontSize: 18 }}>⚙️</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -116,6 +125,27 @@ export default function Home({ state, onOpenModule, onOpenExam }) {
         <Text style={styles.count}>
           {done}/{MODULES.length} thèmes
         </Text>
+      </View>
+
+      {/* objectif quotidien */}
+      <View style={styles.goalCard}>
+        <View style={styles.levelTop}>
+          <Text style={styles.goalName}>🎯 Objectif du jour</Text>
+          <Text style={styles.levelXp}>
+            {xpToday}/{dailyGoal} XP
+          </Text>
+        </View>
+        <View style={styles.levelBar}>
+          <View
+            style={[
+              styles.levelBarFill,
+              { width: `${goalPct}%`, backgroundColor: goalReached ? C.success : C.blue },
+            ]}
+          />
+        </View>
+        {goalReached ? (
+          <Text style={styles.goalDone}>🎉 Objectif atteint, bravo !</Text>
+        ) : null}
       </View>
 
       {/* examen blanc */}
@@ -240,7 +270,17 @@ function makeStyles(C) {
     brand: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     logoDot: { fontSize: 26 },
     h1: { fontSize: 22, fontWeight: '800', color: C.text },
-    stats: { flexDirection: 'row', gap: 8 },
+    stats: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+    gearBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: C.surface2,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
     stat: {
       fontWeight: '800',
       fontSize: 14,
@@ -266,6 +306,22 @@ function makeStyles(C) {
     levelBar: { height: 8, borderRadius: 999, backgroundColor: C.border, overflow: 'hidden' },
     levelBarFill: { height: '100%', backgroundColor: C.amber, borderRadius: 999 },
     levelNext: { fontSize: 12, color: C.textMuted, marginTop: 6 },
+    goalCard: {
+      backgroundColor: C.surface2,
+      borderWidth: 1,
+      borderColor: C.border,
+      borderRadius: 20,
+      padding: 16,
+      marginTop: 14,
+    },
+    goalName: { fontSize: 15, fontWeight: '700', color: C.text },
+    goalDone: {
+      fontSize: 12.5,
+      fontWeight: '700',
+      color: C.accentDark,
+      marginTop: 8,
+      textAlign: 'center',
+    },
     overview: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 },
     track: { flex: 1, height: 8, borderRadius: 999, backgroundColor: C.surface2, overflow: 'hidden' },
     trackFill: { height: '100%', backgroundColor: C.success, borderRadius: 999 },

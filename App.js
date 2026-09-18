@@ -9,6 +9,7 @@ import Home from './src/screens/Home';
 import Profile from './src/screens/Profile';
 import Lesson from './src/screens/Lesson';
 import Exam from './src/screens/Exam';
+import Settings from './src/screens/Settings';
 import TabBar from './src/components/TabBar';
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
   const [tab, setTab] = useState('home');
   const [activeModule, setActiveModule] = useState(null);
   const [examOpen, setExamOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const syncedUserId = useRef(null);
 
   useEffect(() => {
@@ -80,11 +82,18 @@ export default function App() {
           onCommit={commit}
           onExit={() => setActiveModule(null)}
         />
+      ) : settingsOpen ? (
+        <Settings state={state} onCommit={commit} onExit={() => setSettingsOpen(false)} />
       ) : (
         <>
           <View style={{ flex: 1 }}>
             {tab === 'home' ? (
-              <Home state={state} onOpenModule={setActiveModule} onOpenExam={() => setExamOpen(true)} />
+              <Home
+                state={state}
+                onOpenModule={setActiveModule}
+                onOpenExam={() => setExamOpen(true)}
+                onOpenSettings={() => setSettingsOpen(true)}
+              />
             ) : (
               <Profile state={state} auth={auth} />
             )}

@@ -96,7 +96,7 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
     const r = isReview
       ? recordReviewResult(next, correctCount, total, gainedXp)
       : recordResult(next, mod, correctCount, total, gainedXp);
-    if (r.pct >= 70) playComplete();
+    if (r.pct >= 70 || r.goalJustReached) playComplete();
     setResult(r);
     setPhase('summary');
     onCommit(next);

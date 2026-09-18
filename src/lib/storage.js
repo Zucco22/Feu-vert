@@ -6,7 +6,17 @@ import { LEVELS } from '../data/content';
 
 const STORE_KEY = 'feuvert_state_v1';
 
-const EMPTY = { xp: 0, streak: 0, lastActive: null, progress: {}, history: [], mistakes: [] };
+const EMPTY = {
+  xp: 0,
+  streak: 0,
+  lastActive: null,
+  progress: {},
+  history: [],
+  mistakes: [],
+  dailyGoal: 20,
+  xpToday: 0,
+  xpTodayDate: null,
+};
 
 export async function loadState() {
   try {
@@ -62,6 +72,16 @@ export function mergeStates(local, cloud) {
     if (!existing || m.addedAt < existing.addedAt) mistakesById.set(m.id, m);
   }
 
+  // The daily XP counter only makes sense for the most recent of the two
+  // dates; on a tie, keep whichever device logged more XP today.
+  const xpTodayDate = [local.xpTodayDate, cloud.xpTodayDate].filter(Boolean).sort().pop() || null;
+  const xpToday =
+    local.xpTodayDate === cloud.xpTodayDate
+      ? Math.max(local.xpToday || 0, cloud.xpToday || 0)
+      : (local.xpTodayDate || '') >= (cloud.xpTodayDate || '')
+      ? local.xpToday || 0
+      : cloud.xpToday || 0;
+
   return {
     xp: Math.max(local.xp || 0, cloud.xp || 0),
     streak: Math.max(local.streak || 0, cloud.streak || 0),
@@ -70,6 +90,9 @@ export function mergeStates(local, cloud) {
     history: history.slice(0, 30),
     examBest: Math.max(local.examBest || 0, cloud.examBest || 0),
     mistakes: Array.from(mistakesById.values()),
+    dailyGoal: local.dailyGoal || cloud.dailyGoal || 20,
+    xpToday,
+    xpTodayDate,
   };
 }
 
@@ -104,7 +127,24 @@ export function recordReviewResult(state, correct, total, gainedXp) {
     xp: gainedXp,
   });
   state.history = state.history.slice(0, 30);
-  return { pct, stars };
+  const goalJustReached = addDailyXp(state, gainedXp);
+  return { pct, stars, goalJustReached };
+}
+
+// ---- Objectif quotidien d'XP ----
+// Tracks XP earned "today" (resets when the stored date differs from
+// today's), independently from the lifetime XP total. Returns true if this
+// call is what pushed xpToday from below the goal to at/above it.
+export function addDailyXp(state, amount) {
+  const todayISO = new Date().toISOString().slice(0, 10);
+  if (state.xpTodayDate !== todayISO) {
+    state.xpToday = 0;
+    state.xpTodayDate = todayISO;
+  }
+  const before = state.xpToday || 0;
+  state.xpToday = before + amount;
+  const goal = state.dailyGoal || 20;
+  return before < goal && state.xpToday >= goal;
 }
 
 // Increment the daily streak (same rule as the prototype).
@@ -151,5 +191,6 @@ export function recordResult(state, mod, correct, total, gainedXp) {
     xp: gainedXp,
   });
   state.history = state.history.slice(0, 30);
-  return { pct, stars };
+  const goalJustReached = addDailyXp(state, gainedXp);
+  return { pct, stars, goalJustReached };
 }

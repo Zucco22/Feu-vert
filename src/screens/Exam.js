@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useColors } from '../lib/theme';
 import { useMuted, useSoundEffects } from '../lib/sound';
 import { MODULES } from '../data/content';
+import { addDailyXp } from '../lib/storage';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
 import MuteButton from '../components/MuteButton';
@@ -91,7 +92,8 @@ export default function Exam({ state, onCommit, onExit }) {
       xp: gainedXp,
     });
     next.history = next.history.slice(0, 30);
-    if (passed) playComplete();
+    const goalJustReached = addDailyXp(next, gainedXp);
+    if (passed || goalJustReached) playComplete();
     setSavedResult({ correct, pct, passed, gainedXp });
     setPhase('result');
     onCommit(next);
