@@ -4,7 +4,7 @@ import { SvgXml } from 'react-native-svg';
 import { useColors, HEARTS_START, XP_PER_CORRECT } from '../lib/theme';
 import { useMuted, useSoundEffects } from '../lib/sound';
 import { recordResult, recordReviewResult, addMistake, removeMistake } from '../lib/storage';
-import { SCENES } from '../data/content';
+import { SCENES, MODULES } from '../data/content';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
 import MuteButton from '../components/MuteButton';
@@ -195,6 +195,11 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   // ---------- QUIZ ----------
   const answered = selected !== null;
   const isCorrect = answered && q.options[selected].correct;
+  const originMod = q.modId === mod.id ? mod : MODULES.find((m) => m.id === q.modId);
+  const retainPoint =
+    originMod && originMod.points && originMod.points.length
+      ? originMod.points.find((p) => p.s === q.sign) || originMod.points[0]
+      : null;
 
   return (
     <View style={styles.overlay}>
@@ -241,9 +246,16 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
                 <Text style={[styles.verdict, { color: isCorrect ? C.success : C.danger }]}>
                   {isCorrect ? 'Bonne réponse !' : 'Pas tout à fait.'}
                 </Text>
+                {originMod ? <Text style={styles.explainTheme}>{originMod.title}</Text> : null}
                 <Text style={styles.explainText}>{q.explain}</Text>
               </View>
             </View>
+            {retainPoint ? (
+              <View style={styles.retainBox}>
+                <Text style={styles.retainLabel}>À RETENIR</Text>
+                <Text style={styles.retainText}>{retainPoint.t}</Text>
+              </View>
+            ) : null}
           </View>
         ) : null}
 
@@ -376,7 +388,29 @@ function makeStyles(C) {
       borderWidth: 1.5,
     },
     verdict: { fontWeight: '800', marginBottom: 4, fontSize: 15 },
+    explainTheme: {
+      fontSize: 11.5,
+      fontWeight: '700',
+      letterSpacing: 0.3,
+      color: C.textMuted,
+      textTransform: 'uppercase',
+      marginBottom: 4,
+    },
     explainText: { fontSize: 14, lineHeight: 21, color: C.text },
+    retainBox: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: C.border,
+    },
+    retainLabel: {
+      fontSize: 11,
+      letterSpacing: 1,
+      color: C.accentDark,
+      fontWeight: '800',
+      marginBottom: 4,
+    },
+    retainText: { fontSize: 13.5, lineHeight: 19, color: C.text },
     primaryBtn: {
       backgroundColor: C.accent,
       borderRadius: 16,
