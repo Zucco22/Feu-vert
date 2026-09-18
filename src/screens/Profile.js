@@ -13,6 +13,7 @@ import {
 import { useColors } from '../lib/theme';
 import { levelInfo } from '../lib/storage';
 import { MODULES } from '../data/content';
+import { BADGES } from '../data/badges';
 
 export default function Profile({ state, auth }) {
   const C = useColors();
@@ -37,6 +38,8 @@ export default function Profile({ state, auth }) {
         </View>
       </View>
 
+      <BadgesCard C={C} styles={styles} state={state} />
+
       {loading ? (
         <View style={[styles.card, { alignItems: 'center' }]}>
           <ActivityIndicator color={C.accent} />
@@ -47,6 +50,26 @@ export default function Profile({ state, auth }) {
         <AuthCard C={C} styles={styles} signIn={signIn} signUp={signUp} />
       )}
     </ScrollView>
+  );
+}
+
+function BadgesCard({ C, styles, state }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.sectionTitle}>Badges</Text>
+      <View style={styles.badgeGrid}>
+        {BADGES.map((b) => {
+          const unlocked = b.isUnlocked(state);
+          return (
+            <View key={b.id} style={[styles.badgeItem, !unlocked && styles.badgeItemLocked]}>
+              <Text style={[styles.badgeIcon, !unlocked && styles.badgeIconLocked]}>{b.icon}</Text>
+              <Text style={[styles.badgeLabel, !unlocked && { color: C.textMuted }]}>{b.label}</Text>
+              <Text style={styles.badgeDesc}>{b.description}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
@@ -179,6 +202,27 @@ function makeStyles(C) {
     },
     statsRow: { flexDirection: 'row', marginBottom: 12 },
     sectionTitle: { fontSize: 15, fontWeight: '800', color: C.text, marginBottom: 8 },
+    badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+    badgeItem: {
+      width: '47%',
+      backgroundColor: C.surface,
+      borderWidth: 1.5,
+      borderColor: C.amber,
+      borderRadius: 14,
+      padding: 12,
+      alignItems: 'center',
+    },
+    badgeItemLocked: { borderColor: C.border, opacity: 0.6 },
+    badgeIcon: { fontSize: 26, marginBottom: 6 },
+    badgeIconLocked: { opacity: 0.4 },
+    badgeLabel: {
+      fontSize: 12.5,
+      fontWeight: '800',
+      color: C.text,
+      textAlign: 'center',
+      marginBottom: 3,
+    },
+    badgeDesc: { fontSize: 10.5, color: C.textMuted, textAlign: 'center', lineHeight: 14 },
     email: { fontSize: 15, fontWeight: '700', color: C.accentDark, marginBottom: 6 },
     hint: { fontSize: 12.5, color: C.textMuted, lineHeight: 18, marginBottom: 14 },
     input: {

@@ -2,14 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useColors } from '../lib/theme';
 import { useMuted, useSoundEffects } from '../lib/sound';
-import { MODULES } from '../data/content';
+import { MODULES, EXAM_SIZE, EXAM_PASS } from '../data/content';
 import { addDailyXp } from '../lib/storage';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
 import MuteButton from '../components/MuteButton';
 
-const EXAM_SIZE = 40;
-const PASS = 35;
+const PASS = EXAM_PASS;
 const XP_PER_CORRECT = 5;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
