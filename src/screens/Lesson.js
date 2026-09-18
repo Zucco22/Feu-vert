@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { useColors, HEARTS_START, XP_PER_CORRECT } from '../lib/theme';
 import { useMuted, useSoundEffects } from '../lib/sound';
-import { recordResult } from '../lib/storage';
+import { recordResult, recordReviewResult, addMistake, removeMistake } from '../lib/storage';
 import { SCENES } from '../data/content';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
@@ -18,13 +18,20 @@ function shuffle(arr) {
   return a;
 }
 
+const REVIEW_MOD_ID = '__review__';
+
 // choices[0] in the data is the correct answer; shuffle for display.
-function buildDeck(questions) {
-  return questions.map((qd) => ({
+// Each card keeps track of its origin module + question index (stable across
+// shuffles) so a wrong answer can be memorized for "Révise tes erreurs" and a
+// right one can clear it from that list, whichever quiz it happens in.
+function buildDeck(mod, questions) {
+  return questions.map((qd, idx) => ({
     sign: qd.sign,
     q: qd.q,
     explain: qd.explain,
-    options: shuffle(qd.choices.map((text, idx) => ({ text, correct: idx === 0 }))),
+    modId: qd._modId || mod.id,
+    qIndex: qd._qIndex != null ? qd._qIndex : idx,
+    options: shuffle(qd.choices.map((text, i) => ({ text, correct: i === 0 }))),
   }));
 }
 
@@ -36,8 +43,9 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   const [muted, toggleMuted] = useMuted();
   const { playCorrect, playIncorrect, playComplete } = useSoundEffects(muted);
 
+  const isReview = mod.id === REVIEW_MOD_ID;
   const [phase, setPhase] = useState('intro');
-  const deck = useMemo(() => buildDeck(mod.questions), [mod]);
+  const deck = useMemo(() => buildDeck(mod, mod.questions), [mod]);
   const [qi, setQi] = useState(0);
   const [selected, setSelected] = useState(null);
   const [mascoMood, setMascoMood] = useState('neutral');
@@ -45,6 +53,7 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [gainedXp, setGainedXp] = useState(0);
   const [result, setResult] = useState(null);
+  const [workingMistakes, setWorkingMistakes] = useState(() => state.mistakes || []);
 
   const total = deck.length;
   const q = deck[qi];
@@ -58,9 +67,11 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
       setCorrectCount((c) => c + 1);
       setGainedXp((x) => x + XP_PER_CORRECT);
       playCorrect();
+      setWorkingMistakes((m) => removeMistake(m, q.modId, q.qIndex));
     } else {
       setHearts((h) => Math.max(0, h - 1));
       playIncorrect();
+      setWorkingMistakes((m) => addMistake(m, q.modId, q.qIndex));
     }
   }
 
@@ -76,8 +87,15 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
   }
 
   function finish() {
-    const next = { ...state, progress: { ...state.progress }, history: [...state.history] };
-    const r = recordResult(next, mod, correctCount, total, gainedXp);
+    const next = {
+      ...state,
+      progress: { ...state.progress },
+      history: [...state.history],
+      mistakes: workingMistakes,
+    };
+    const r = isReview
+      ? recordReviewResult(next, correctCount, total, gainedXp)
+      : recordResult(next, mod, correctCount, total, gainedXp);
     if (r.pct >= 70) playComplete();
     setResult(r);
     setPhase('summary');
@@ -113,15 +131,19 @@ export default function Lesson({ mod, state, onCommit, onExit }) {
             </View>
           ) : null}
 
-          <Text style={styles.lessonHeading}>À RETENIR</Text>
-          <View style={{ gap: 13, width: '100%' }}>
-            {mod.points.map((p, i) => (
-              <View key={i} style={styles.point}>
-                <Sign xml={p.s} size={38} />
-                <Text style={styles.pointText}>{p.t}</Text>
+          {mod.points && mod.points.length ? (
+            <>
+              <Text style={styles.lessonHeading}>À RETENIR</Text>
+              <View style={{ gap: 13, width: '100%' }}>
+                {mod.points.map((p, i) => (
+                  <View key={i} style={styles.point}>
+                    <Sign xml={p.s} size={38} />
+                    <Text style={styles.pointText}>{p.t}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            </>
+          ) : null}
 
           <Pressable style={styles.primaryBtn} onPress={() => setPhase('quiz')}>
             <Text style={styles.primaryBtnText}>COMMENCER LE QUIZ</Text>

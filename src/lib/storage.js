@@ -6,14 +6,20 @@ import { LEVELS } from '../data/content';
 
 const STORE_KEY = 'feuvert_state_v1';
 
-const EMPTY = { xp: 0, streak: 0, lastActive: null, progress: {}, history: [] };
+const EMPTY = { xp: 0, streak: 0, lastActive: null, progress: {}, history: [], mistakes: [] };
 
 export async function loadState() {
   try {
     const raw = await AsyncStorage.getItem(STORE_KEY);
     if (raw) {
       const s = JSON.parse(raw);
-      return { ...EMPTY, ...s, progress: s.progress || {}, history: s.history || [] };
+      return {
+        ...EMPTY,
+        ...s,
+        progress: s.progress || {},
+        history: s.history || [],
+        mistakes: s.mistakes || [],
+      };
     }
   } catch (e) {}
   return { ...EMPTY };
@@ -50,6 +56,12 @@ export function mergeStates(local, cloud) {
   });
   history.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
+  const mistakesById = new Map();
+  for (const m of [...(local.mistakes || []), ...(cloud.mistakes || [])]) {
+    const existing = mistakesById.get(m.id);
+    if (!existing || m.addedAt < existing.addedAt) mistakesById.set(m.id, m);
+  }
+
   return {
     xp: Math.max(local.xp || 0, cloud.xp || 0),
     streak: Math.max(local.streak || 0, cloud.streak || 0),
@@ -57,7 +69,42 @@ export function mergeStates(local, cloud) {
     progress,
     history: history.slice(0, 30),
     examBest: Math.max(local.examBest || 0, cloud.examBest || 0),
+    mistakes: Array.from(mistakesById.values()),
   };
+}
+
+// ---- Mode "Révise tes erreurs" ----
+// A mistake is identified by the module id + the question's index within
+// that module's `questions` array, which stays stable across shuffles.
+export function mistakeId(modId, qIndex) {
+  return `${modId}#${qIndex}`;
+}
+
+export function addMistake(mistakes, modId, qIndex) {
+  const id = mistakeId(modId, qIndex);
+  if ((mistakes || []).some((m) => m.id === id)) return mistakes;
+  return [...(mistakes || []), { id, modId, qIndex, addedAt: Date.now() }];
+}
+
+export function removeMistake(mistakes, modId, qIndex) {
+  const id = mistakeId(modId, qIndex);
+  return (mistakes || []).filter((m) => m.id !== id);
+}
+
+// Records a finished "Révise tes erreurs" session: awards XP and logs
+// history, but never touches module progress/stars (it isn't tied to one module).
+export function recordReviewResult(state, correct, total, gainedXp) {
+  const pct = total ? Math.round((correct / total) * 100) : 0;
+  const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+  state.xp += gainedXp;
+  state.history.unshift({
+    date: new Date().toISOString().slice(0, 10),
+    title: 'Révision des erreurs',
+    pct,
+    xp: gainedXp,
+  });
+  state.history = state.history.slice(0, 30);
+  return { pct, stars };
 }
 
 // Increment the daily streak (same rule as the prototype).

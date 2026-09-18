@@ -529,3 +529,31 @@ export const MODULES = [
         explain:"On se gare sur la BAU, gilet enfilé, et on se met en sécurité derrière la glissière avant d'agir."}
      ]}
   ];
+
+export const EXAM_SIZE = 40;
+export const EXAM_PASS = 35;
+
+// Builds a synthetic "module" made only of the questions the user has
+// previously gotten wrong (see mistakeId/addMistake/removeMistake in
+// storage.js), oldest first, so it can be fed straight into the existing
+// Lesson quiz component.
+export function buildReviewModule(mistakes) {
+  const sorted = [...(mistakes || [])].sort((a, b) => a.addedAt - b.addedAt);
+  const questions = sorted
+    .map((m) => {
+      const mod = MODULES.find((mm) => mm.id === m.modId);
+      const qd = mod && mod.questions[m.qIndex];
+      if (!qd) return null;
+      return { ...qd, _modId: m.modId, _qIndex: m.qIndex };
+    })
+    .filter(Boolean);
+
+  return {
+    id: '__review__',
+    title: 'Révise tes erreurs',
+    sign: SIGN.stopwatch,
+    blurb: 'Reprends uniquement les questions que tu as ratées, en commençant par les plus anciennes.',
+    points: [],
+    questions,
+  };
+}

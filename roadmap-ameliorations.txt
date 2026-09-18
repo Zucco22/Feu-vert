@@ -1,0 +1,117 @@
+FEU VERT — ROADMAP D'AMÉLIORATIONS (prompts Claude Code)
+========================================================
+Mode d'emploi : dans ton dossier Feu-vert, lance `claude`, puis colle UN bloc à
+la fois (dans l'ordre). Laisse-le coder, tester et pusher, vérifie sur ton
+téléphone, puis passe au suivant. Chaque prompt se termine par « teste avec
+npx expo export --platform ios puis git add/commit/push, explique en français ».
+
+
+==================================================================
+1) MODE « RÉVISE TES ERREURS »  (le plus utile)
+==================================================================
+Ajoute un mode « Révise tes erreurs » à l'appli. Mémorise (dans le state + Supabase)
+les questions déjà ratées par l'utilisateur (par un identifiant stable : id de thème +
+index de question). Ajoute sur l'accueil (ou le Profil) un bouton « Réviser mes erreurs
+(N) » qui lance un quiz composé UNIQUEMENT de ces questions ratées, en priorité les plus
+anciennes. Quand une question ratée est réussie ici, on la retire de la liste des erreurs.
+Réutilise le composant de quiz existant et le style actuel. Si la liste est vide, affiche
+un message encourageant. Teste avec npx expo export --platform ios puis git add/commit/push,
+explique en français.
+
+
+==================================================================
+2) EXPLICATION ENRICHIE APRÈS RÉPONSE
+==================================================================
+Dans le quiz, quand la réponse est révélée, en plus de l'explication actuelle, affiche le
+nom du thème concerné et un petit rappel « À retenir » (1 phrase tirée des points de la
+leçon du thème). Garde le design existant (clair + sombre). Teste avec npx expo export
+--platform ios puis git add/commit/push, explique en français.
+
+
+==================================================================
+3) OBJECTIF QUOTIDIEN
+==================================================================
+Ajoute un objectif quotidien d'XP (par défaut 20 XP/jour, modifiable dans les réglages).
+Sur l'accueil, affiche une barre « Objectif du jour : X/20 XP » qui se remplit avec l'XP
+gagné aujourd'hui et se réinitialise chaque jour. Quand l'objectif est atteint, montre une
+petite célébration (et joue le son de victoire existant). Stocke l'XP du jour dans le state
++ Supabase. Teste avec npx expo export --platform ios puis git add/commit/push, explique en
+français.
+
+
+==================================================================
+4) BADGES / RÉCOMPENSES
+==================================================================
+Ajoute un système de badges simples, affichés dans le Profil : ex. « Premier thème réussi »,
+« Sans-faute à un examen », « Série de 3 jours », « 5 thèmes maîtrisés (3 étoiles) », « Examen
+réussi ». Débloque-les automatiquement selon la progression (state + Supabase). Affiche les
+badges obtenus en couleur et les autres en grisé avec leur condition. Garde le style actuel
+(clair + sombre). Teste avec npx expo export --platform ios puis git add/commit/push, explique
+en français.
+
+
+==================================================================
+5) NOTIFICATIONS DE RAPPEL QUOTIDIEN
+==================================================================
+Ajoute un rappel quotidien local avec expo-notifications : une notification à une heure choisie
+(par défaut 19h) du type « Révise ton code pour garder ta série 🔥 ». Ajoute dans les réglages
+un interrupteur pour l'activer/désactiver et choisir l'heure ; demande la permission de
+notifications proprement. Utilise les notifications LOCALES programmées (pas de push serveur).
+Teste avec npx expo export --platform ios puis git add/commit/push, explique en français.
+[Note : en Expo Go les notifications ont des limites ; si besoin d'un build dédié, explique-moi
+comment tester.]
+
+
+==================================================================
+6) ICÔNE + ÉCRAN DE DÉMARRAGE PERSONNALISÉS
+==================================================================
+Crée une icône d'appli et un écran de démarrage (splash) cohérents avec Feu Vert : fond vert
+(#58CC02) avec un feu tricolore stylisé. Génère les images nécessaires dans assets/ (icon.png
+1024x1024, splash, adaptive-icon Android) et mets à jour app.json en conséquence. Teste avec
+npx expo export --platform ios puis git add/commit/push, explique en français.
+[Note : si tu préfères une icône dessinée à la main, demande-la à Claude (chat) qui peut la
+prévisualiser en image avant de te la donner.]
+
+
+==================================================================
+7) MOT DE PASSE OUBLIÉ
+==================================================================
+Ajoute un lien « Mot de passe oublié ? » sur l'écran de connexion, qui envoie un email de
+réinitialisation via Supabase (supabase.auth.resetPasswordForEmail) et un écran pour définir
+un nouveau mot de passe. Gère proprement les messages d'erreur/succès en français. Teste avec
+npx expo export --platform ios puis git add/commit/push, explique en français.
+[Note IMPORTANTE : le lien de reset utilise l'URL de redirection Supabase. Dans Supabase →
+Authentication → URL Configuration, il faudra mettre une vraie redirection (deep link de
+l'appli) au lieu de localhost. Demande à Claude (chat) de t'aider à configurer ça quand tu y
+seras.]
+
+
+==================================================================
+8) ÉCRAN RÉGLAGES COMPLET
+==================================================================
+Étoffe l'écran Réglages (roue crantée) : choix du thème (Auto / Clair / Sombre), interrupteur
+du son (déjà existant), objectif quotidien, notifications, et un bouton « Réinitialiser ma
+progression » (avec confirmation) qui remet XP/progression à zéro localement et dans Supabase.
+Garde le style actuel. Teste avec npx expo export --platform ios puis git add/commit/push,
+explique en français.
+
+
+==================================================================
+9) ONBOARDING (PREMIER LANCEMENT)
+==================================================================
+Ajoute un onboarding de 3 écrans au tout premier lancement (mémorisé avec AsyncStorage) :
+(1) bienvenue sur Feu Vert, (2) comment ça marche (parcours, examens, XP), (3) crée un compte
+pour sauvegarder ta progression. Bouton « Passer » possible. Style cohérent clair + sombre.
+Teste avec npx expo export --platform ios puis git add/commit/push, explique en français.
+
+
+==================================================================
+10) STATISTIQUES PLUS FINES
+==================================================================
+Dans le Profil, ajoute des stats plus détaillées : taux de réussite par thème (%), nombre total
+de questions répondues, meilleur score d'examen, et une petite courbe/barres de l'XP gagné sur les
+7 derniers jours. Utilise les données déjà stockées (history, progress). Garde le style actuel.
+Teste avec npx expo export --platform ios puis git add/commit/push, explique en français.
+
+
+-- Fin. Fais-les dans l'ordre, un à la fois. --

@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useColors } from '../lib/theme';
 import { useMuted } from '../lib/sound';
 import { levelInfo } from '../lib/storage';
-import { MODULES } from '../data/content';
+import { MODULES, buildReviewModule } from '../data/content';
 import Sign from '../components/Sign';
 import MuteButton from '../components/MuteButton';
 
@@ -62,6 +62,7 @@ export default function Home({ state, onOpenModule, onOpenExam }) {
   const lvl = levelInfo(state.xp);
   const done = Object.keys(state.progress).length;
   const [muted, toggleMuted] = useMuted();
+  const mistakeCount = (state.mistakes || []).length;
 
   const [pathWidth, setPathWidth] = useState(Dimensions.get('window').width - 32);
   const positions = useMemo(() => computePositions(pathWidth), [pathWidth]);
@@ -130,6 +131,29 @@ export default function Home({ state, onOpenModule, onOpenExam }) {
           </Text>
         </View>
         <Text style={styles.examArrow}>›</Text>
+      </Pressable>
+
+      {/* révision des erreurs */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.reviewBtn,
+          mistakeCount === 0 && styles.reviewBtnDisabled,
+          pressed && mistakeCount > 0 && { opacity: 0.9 },
+        ]}
+        disabled={mistakeCount === 0}
+        onPress={() => onOpenModule(buildReviewModule(state.mistakes))}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.reviewTitle, mistakeCount === 0 && { color: C.text }]}>
+            🔁 Réviser mes erreurs ({mistakeCount})
+          </Text>
+          <Text style={[styles.reviewSub, mistakeCount === 0 && { color: C.textMuted }]}>
+            {mistakeCount > 0
+              ? 'Uniquement les questions déjà ratées, en commençant par les plus anciennes'
+              : 'Aucune erreur pour l’instant, continue comme ça !'}
+          </Text>
+        </View>
+        {mistakeCount > 0 ? <Text style={styles.examArrow}>›</Text> : null}
       </Pressable>
 
       {/* module path — winding road */}
@@ -258,6 +282,19 @@ function makeStyles(C) {
     examTitle: { fontSize: 17, fontWeight: '800', color: '#fff' },
     examSub: { fontSize: 12.5, color: '#EAF7FF', marginTop: 3, fontWeight: '600' },
     examArrow: { fontSize: 28, color: '#fff', fontWeight: '800' },
+
+    reviewBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      marginTop: 12,
+      padding: 16,
+      borderRadius: 18,
+      backgroundColor: C.purple,
+    },
+    reviewBtnDisabled: { backgroundColor: C.surface2, borderWidth: 1, borderColor: C.border },
+    reviewTitle: { fontSize: 16, fontWeight: '800', color: '#fff' },
+    reviewSub: { fontSize: 12.5, color: '#F6EBFF', marginTop: 3, fontWeight: '600' },
 
     pathWrap: { marginTop: 28, width: '100%', position: 'relative' },
     nodeBlock: { position: 'absolute', alignItems: 'center' },
