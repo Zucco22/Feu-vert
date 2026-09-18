@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { useColorScheme } from 'react-native';
+import { ThemeModeContext } from './themeMode';
 
 const LIGHT = {
   bg: '#F5F5F5',
@@ -52,9 +54,17 @@ const DARK = {
   roadLine: '#E5E9F0',
 };
 
-export function useColors() {
+// Resolves 'auto' (follow the system) vs. an explicit 'light'/'dark' choice
+// made in Réglages, into the actual scheme to render.
+export function useEffectiveScheme() {
   const scheme = useColorScheme();
-  return scheme === 'dark' ? DARK : LIGHT;
+  const { mode } = useContext(ThemeModeContext);
+  if (mode === 'light' || mode === 'dark') return mode;
+  return scheme === 'dark' ? 'dark' : 'light';
+}
+
+export function useColors() {
+  return useEffectiveScheme() === 'dark' ? DARK : LIGHT;
 }
 
 // Kept for Sign.js and any import that doesn't need reactivity

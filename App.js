@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, ActivityIndicator, StatusBar, useColorScheme } from 'react-native';
+import { View, ActivityIndicator, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import { useColors } from './src/lib/theme';
+import { useColors, useEffectiveScheme } from './src/lib/theme';
+import { ThemeModeContext, useThemeModeState } from './src/lib/themeMode';
 import { loadState, saveState, bumpStreak, mergeStates } from './src/lib/storage';
 import { useAuth } from './src/lib/auth';
 import { fetchCloudProgress, pushCloudProgress } from './src/lib/cloudSync';
@@ -13,8 +14,17 @@ import Settings from './src/screens/Settings';
 import TabBar from './src/components/TabBar';
 
 export default function App() {
+  const themeModeState = useThemeModeState();
+  return (
+    <ThemeModeContext.Provider value={themeModeState}>
+      <AppInner />
+    </ThemeModeContext.Provider>
+  );
+}
+
+function AppInner() {
   const C = useColors();
-  const scheme = useColorScheme();
+  const scheme = useEffectiveScheme();
   const auth = useAuth();
   const [state, setState] = useState(null);
   const [tab, setTab] = useState('home');
