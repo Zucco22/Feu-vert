@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColors, useEffectiveScheme } from './src/lib/theme';
 import { ThemeModeContext, useThemeModeState } from './src/lib/themeMode';
 import { loadState, saveState, bumpStreak, mergeStates } from './src/lib/storage';
+import { syncDailyReminder } from './src/lib/notifications';
 import { useAuth } from './src/lib/auth';
 import { fetchCloudProgress, pushCloudProgress } from './src/lib/cloudSync';
 import Home from './src/screens/Home';
@@ -43,6 +44,7 @@ function AppInner() {
       const s = bumpStreak(await loadState());
       await saveState(s);
       setState(s);
+      syncDailyReminder(s).catch(() => {});
     })();
     (async () => {
       let seen = false;
@@ -72,6 +74,7 @@ function AppInner() {
       const merged = mergeStates(state, cloud);
       setState(merged);
       await saveState(merged);
+      syncDailyReminder(merged).catch(() => {});
       await pushCloudProgress(auth.user.id, merged);
     })();
   }, [auth.user, state]);
@@ -81,6 +84,7 @@ function AppInner() {
       const copy = { ...next, progress: { ...next.progress }, history: [...next.history] };
       setState(copy);
       await saveState(copy);
+      syncDailyReminder(copy).catch(() => {});
       if (auth.user) pushCloudProgress(auth.user.id, copy);
     },
     [auth.user]

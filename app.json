@@ -23,7 +23,8 @@
       "backgroundColor": "#58CC02"
     },
     "plugins": [
-      "expo-audio"
+      "expo-audio",
+      "expo-notifications"
     ]
   }
 }

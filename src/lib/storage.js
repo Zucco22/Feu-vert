@@ -16,6 +16,9 @@ const EMPTY = {
   dailyGoal: 20,
   xpToday: 0,
   xpTodayDate: null,
+  notifEnabled: false,
+  notifHour: 19,
+  notifMinute: 0,
 };
 
 export async function loadState() {
@@ -93,6 +96,12 @@ export function mergeStates(local, cloud) {
     dailyGoal: local.dailyGoal || cloud.dailyGoal || 20,
     xpToday,
     xpTodayDate,
+    // The reminder preference follows the account across devices; the actual
+    // OS-level scheduling on this device is then synced separately (see
+    // syncDailyReminder in lib/notifications.js), permission allowing.
+    notifEnabled: cloud.notifEnabled !== undefined ? cloud.notifEnabled : local.notifEnabled,
+    notifHour: cloud.notifHour !== undefined ? cloud.notifHour : local.notifHour,
+    notifMinute: cloud.notifMinute !== undefined ? cloud.notifMinute : local.notifMinute,
   };
 }
 

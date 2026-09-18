@@ -1,8 +1,9 @@
-import React, { useContext, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
+import React, { useContext, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useColors } from '../lib/theme';
 import { ThemeModeContext } from '../lib/themeMode';
 import { useMuted } from '../lib/sound';
+import { requestNotificationPermission } from '../lib/notifications';
 
 const GOAL_STEP = 5;
 const GOAL_MIN = 5;
@@ -19,12 +20,38 @@ export default function Settings({ state, onCommit, onExit }) {
   const styles = useMemo(() => makeStyles(C), [C]);
   const { mode, setMode } = useContext(ThemeModeContext);
   const [muted, toggleMuted] = useMuted();
+  const [notifBusy, setNotifBusy] = useState(false);
   const dailyGoal = state.dailyGoal || 20;
+  const notifEnabled = !!state.notifEnabled;
+  const notifHour = state.notifHour ?? 19;
 
   function changeGoal(delta) {
     const next = Math.max(GOAL_MIN, Math.min(GOAL_MAX, dailyGoal + delta));
     if (next === dailyGoal) return;
     onCommit({ ...state, dailyGoal: next });
+  }
+
+  async function toggleNotifications() {
+    if (notifEnabled) {
+      onCommit({ ...state, notifEnabled: false });
+      return;
+    }
+    setNotifBusy(true);
+    const granted = await requestNotificationPermission();
+    setNotifBusy(false);
+    if (!granted) {
+      Alert.alert(
+        'Notifications désactivées',
+        "Pour recevoir un rappel quotidien, autorise les notifications pour Feu Vert dans les réglages de ton téléphone."
+      );
+      return;
+    }
+    onCommit({ ...state, notifEnabled: true, notifHour, notifMinute: state.notifMinute ?? 0 });
+  }
+
+  function changeHour(delta) {
+    const next = (notifHour + delta + 24) % 24;
+    onCommit({ ...state, notifHour: next });
   }
 
   function resetProgress() {
@@ -99,6 +126,40 @@ export default function Settings({ state, onCommit, onExit }) {
               <View style={[styles.switchKnob, !muted && styles.switchKnobOn]} />
             </Pressable>
           </View>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.switchRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sectionTitle}>Rappel quotidien</Text>
+              <Text style={styles.hint}>
+                Une notification « Révise ton code pour garder ta série 🔥 » chaque jour, à
+                l'heure choisie ci-dessous.
+              </Text>
+            </View>
+            {notifBusy ? (
+              <ActivityIndicator color={C.accent} />
+            ) : (
+              <Pressable
+                style={[styles.switch, notifEnabled && styles.switchOn]}
+                onPress={toggleNotifications}
+                hitSlop={8}
+              >
+                <View style={[styles.switchKnob, notifEnabled && styles.switchKnobOn]} />
+              </Pressable>
+            )}
+          </View>
+          {notifEnabled ? (
+            <View style={[styles.stepperRow, { marginTop: 16 }]}>
+              <Pressable style={styles.stepperBtn} onPress={() => changeHour(-1)}>
+                <Text style={styles.stepperBtnText}>−</Text>
+              </Pressable>
+              <Text style={styles.stepperValue}>{String(notifHour).padStart(2, '0')}h</Text>
+              <Pressable style={styles.stepperBtn} onPress={() => changeHour(1)}>
+                <Text style={styles.stepperBtnText}>+</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </View>
 
         <View style={styles.card}>
