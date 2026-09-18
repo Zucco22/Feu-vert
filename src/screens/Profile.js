@@ -10,10 +10,44 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useColors } from '../lib/theme';
+import { useColors, XP_PER_CORRECT, EXAM_XP_PER_CORRECT } from '../lib/theme';
 import { levelInfo } from '../lib/storage';
-import { MODULES } from '../data/content';
+import { MODULES, EXAM_SIZE } from '../data/content';
 import { BADGES } from '../data/badges';
+
+const DAY_LETTERS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+
+// History entries only store the % and the XP earned, not the raw question
+// count, so we back it out from the XP-per-correct-answer for that kind of
+// session. History is capped to the last 30 sessions, so this is a recent
+// count, not a lifetime total.
+function estimateAnsweredQuestions(history) {
+  let total = 0;
+  for (const h of history || []) {
+    if (!h.pct) continue;
+    const perCorrect = h.title === 'Examen blanc' ? EXAM_XP_PER_CORRECT : XP_PER_CORRECT;
+    const correct = Math.round(h.xp / perCorrect);
+    const count = Math.round(correct / (h.pct / 100));
+    if (Number.isFinite(count) && count > 0) total += count;
+  }
+  return total;
+}
+
+// Sums XP earned per day (from history) for the last 7 days, oldest first.
+function last7DaysXp(history) {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push({ iso: d.toISOString().slice(0, 10), dow: d.getDay(), xp: 0 });
+  }
+  const byDate = new Map(days.map((d) => [d.iso, d]));
+  for (const h of history || []) {
+    const day = byDate.get(h.date);
+    if (day) day.xp += h.xp || 0;
+  }
+  return days;
+}
 
 export default function Profile({ state, auth }) {
   const C = useColors();
@@ -39,6 +73,8 @@ export default function Profile({ state, auth }) {
       </View>
 
       <BadgesCard C={C} styles={styles} state={state} />
+
+      <StatsCard C={C} styles={styles} state={state} />
 
       {loading ? (
         <View style={[styles.card, { alignItems: 'center' }]}>
@@ -69,6 +105,68 @@ function BadgesCard({ C, styles, state }) {
           );
         })}
       </View>
+    </View>
+  );
+}
+
+function StatsCard({ C, styles, state }) {
+  const answered = estimateAnsweredQuestions(state.history);
+  const week = last7DaysXp(state.history);
+  const maxXp = Math.max(1, ...week.map((d) => d.xp));
+  const attempted = MODULES.filter((m) => state.progress[m.id]);
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.sectionTitle}>Statistiques</Text>
+
+      <View style={styles.statsRow}>
+        <Stat C={C} label="Questions répondues" value={answered} />
+        <Stat C={C} label="Meilleur score examen" value={state.examBest ? `${state.examBest}/${EXAM_SIZE}` : '—'} />
+      </View>
+      <Text style={styles.hint}>
+        « Questions répondues » couvre les 30 dernières sessions (historique conservé par l'appli).
+      </Text>
+
+      <Text style={styles.subTitle}>XP gagné — 7 derniers jours</Text>
+      <View style={styles.chartRow}>
+        {week.map((d, i) => (
+          <View key={i} style={styles.chartCol}>
+            <View style={styles.chartBarTrack}>
+              <View
+                style={[
+                  styles.chartBar,
+                  { height: `${Math.max(4, Math.round((d.xp / maxXp) * 100))}%` },
+                ]}
+              />
+            </View>
+            <Text style={styles.chartLabel}>{DAY_LETTERS[d.dow]}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Text style={styles.subTitle}>Taux de réussite par thème</Text>
+      {attempted.length === 0 ? (
+        <Text style={styles.hint}>Termine un premier thème pour voir tes statistiques ici.</Text>
+      ) : (
+        <View style={{ gap: 10 }}>
+          {attempted.map((m) => {
+            const p = state.progress[m.id];
+            return (
+              <View key={m.id}>
+                <View style={styles.themeRowTop}>
+                  <Text style={styles.themeRowTitle} numberOfLines={1}>
+                    {m.title}
+                  </Text>
+                  <Text style={styles.themeRowPct}>{p.bestPct}%</Text>
+                </View>
+                <View style={styles.themeTrack}>
+                  <View style={[styles.themeTrackFill, { width: `${p.bestPct}%` }]} />
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
@@ -223,6 +321,39 @@ function makeStyles(C) {
       marginBottom: 3,
     },
     badgeDesc: { fontSize: 10.5, color: C.textMuted, textAlign: 'center', lineHeight: 14 },
+
+    subTitle: {
+      fontSize: 12,
+      letterSpacing: 0.5,
+      color: C.textMuted,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      marginTop: 16,
+      marginBottom: 10,
+    },
+    chartRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'space-between',
+      height: 90,
+    },
+    chartCol: { flex: 1, alignItems: 'center', gap: 6 },
+    chartBarTrack: {
+      width: 16,
+      height: 70,
+      borderRadius: 8,
+      backgroundColor: C.surface,
+      justifyContent: 'flex-end',
+      overflow: 'hidden',
+    },
+    chartBar: { width: '100%', backgroundColor: C.blue, borderRadius: 8 },
+    chartLabel: { fontSize: 10.5, color: C.textMuted, fontWeight: '700' },
+
+    themeRowTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+    themeRowTitle: { flex: 1, fontSize: 13, fontWeight: '700', color: C.text, marginRight: 8 },
+    themeRowPct: { fontSize: 12.5, fontWeight: '800', color: C.accentDark },
+    themeTrack: { height: 6, borderRadius: 999, backgroundColor: C.surface, overflow: 'hidden' },
+    themeTrackFill: { height: '100%', backgroundColor: C.accent, borderRadius: 999 },
     email: { fontSize: 15, fontWeight: '700', color: C.accentDark, marginBottom: 6 },
     hint: { fontSize: 12.5, color: C.textMuted, lineHeight: 18, marginBottom: 14 },
     input: {

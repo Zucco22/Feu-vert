@@ -4,12 +4,13 @@ import { useColors } from '../lib/theme';
 import { useMuted, useSoundEffects } from '../lib/sound';
 import { MODULES, EXAM_SIZE, EXAM_PASS } from '../data/content';
 import { addDailyXp } from '../lib/storage';
+import { EXAM_XP_PER_CORRECT } from '../lib/theme';
 import Sign from '../components/Sign';
 import MascoLight from '../components/MascoLight';
 import MuteButton from '../components/MuteButton';
 
 const PASS = EXAM_PASS;
-const XP_PER_CORRECT = 5;
+const XP_PER_CORRECT = EXAM_XP_PER_CORRECT;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 function shuffle(arr) {

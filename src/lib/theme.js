@@ -72,3 +72,4 @@ export const C = LIGHT;
 
 export const HEARTS_START = 3;
 export const XP_PER_CORRECT = 10;
+export const EXAM_XP_PER_CORRECT = 5;
