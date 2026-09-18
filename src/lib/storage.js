@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LEVELS } from '../data/content';
 
 // Mirrors the prototype's localStorage state, but persisted on-device.
-// NEXT STEP (cloud sync + accounts): replace load/save with Supabase calls.
+// Cloud sync (Supabase, when signed in) lives in cloudSync.js and merges in via mergeStates below.
 
 const STORE_KEY = 'feuvert_state_v1';
 
@@ -23,6 +23,41 @@ export async function saveState(state) {
   try {
     await AsyncStorage.setItem(STORE_KEY, JSON.stringify(state));
   } catch (e) {}
+}
+
+// Merge a local and a cloud state after login: always keep the best of both
+// sides (higher XP, union of theme completions, best exam score) so neither
+// device loses progress.
+export function mergeStates(local, cloud) {
+  if (!cloud) return local;
+  if (!local) return cloud;
+
+  const progress = { ...local.progress };
+  for (const id of Object.keys(cloud.progress || {})) {
+    const c = cloud.progress[id];
+    const l = progress[id];
+    progress[id] = l
+      ? { bestPct: Math.max(l.bestPct, c.bestPct), stars: Math.max(l.stars, c.stars) }
+      : c;
+  }
+
+  const seen = new Set();
+  const history = [...(local.history || []), ...(cloud.history || [])].filter((h) => {
+    const key = `${h.date}|${h.title}|${h.pct}|${h.xp}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  history.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
+  return {
+    xp: Math.max(local.xp || 0, cloud.xp || 0),
+    streak: Math.max(local.streak || 0, cloud.streak || 0),
+    lastActive: [local.lastActive, cloud.lastActive].filter(Boolean).sort().pop() || null,
+    progress,
+    history: history.slice(0, 30),
+    examBest: Math.max(local.examBest || 0, cloud.examBest || 0),
+  };
 }
 
 // Increment the daily streak (same rule as the prototype).
